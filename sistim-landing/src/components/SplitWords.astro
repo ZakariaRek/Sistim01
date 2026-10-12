@@ -1,0 +1,11 @@
+---
+// Splits text into words at BUILD time (never into letters: Arabic letters must stay joined).
+// Screen readers get the full sentence once; the animated copy is aria-hidden.
+interface Props { text: string; as?: 'h1' | 'h2' | 'h3' | 'p'; class?: string; id?: string; mode?: 'scroll' | 'hero' }
+const { text, as: Tag = 'h2', class: cls = '', id, mode = 'scroll' } = Astro.props;
+const words = text.split(/\s+/).filter(Boolean);
+---
+<Tag id={id} class:list={['split', mode === 'hero' ? 'hero-in' : '', cls]} data-reveal={mode === 'scroll' ? 'words' : undefined}>
+  <span class="sr-only">{text}</span>
+  <span aria-hidden="true">{words.map((w, i) => (<><span class="w"><span style={`--i:${i}`}>{w}</span></span>{i < words.length - 1 ? ' ' : ''}</>))}</span>
+</Tag>

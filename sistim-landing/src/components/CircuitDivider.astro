@@ -1,0 +1,28 @@
+---
+// Section divider built from the logo's circuit motif. Draws itself (stroke-dashoffset) when it
+// scrolls into view; the end node pulses. Mirrored in RTL so it always draws from the reading start.
+interface Props { variant?: 1 | 2 | 3; class?: string }
+const { variant = 1, class: cls = '' } = Astro.props;
+const shapes = {
+  1: { d: 'M0 40 H380 L420 12 H640 L680 40 H1200', rings: [[420, 12], [640, 12]], dot: [880, 40] },
+  2: { d: 'M0 40 H260 L300 68 H760 L800 40 H1200', rings: [[300, 68]], dot: [760, 68] },
+  3: { d: 'M0 40 H520 L548 12 H900 L928 40 H1200', rings: [[900, 12]], dot: [548, 12] },
+}[variant];
+---
+<div class:list={['draw-on-scroll pointer-events-none relative h-20 w-full overflow-hidden rtl:-scale-x-100', cls]} aria-hidden="true" data-loop>
+  <svg class="absolute inset-0 h-full w-full" viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid slice" fill="none">
+    <defs>
+      <linearGradient id={`div-grad-${variant}`} x1="0" x2="1">
+        <stop offset="0" stop-color="#16AB79" stop-opacity="0" />
+        <stop offset="0.25" stop-color="#16AB79" stop-opacity="0.6" />
+        <stop offset="0.75" stop-color="#16AB79" stop-opacity="0.6" />
+        <stop offset="1" stop-color="#16AB79" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <path d={shapes.d} stroke="#ffffff" stroke-opacity="0.06" stroke-width="1.5" />
+    <path class="draw" pathLength="1" d={shapes.d} stroke={`url(#div-grad-${variant})`} stroke-width="1.5" stroke-linejoin="round" />
+    {shapes.rings.map(([cx, cy], i) => <circle class="pop" style={`--i:${i + 2}`} cx={cx} cy={cy} r="5" stroke="#16AB79" stroke-width="1.5" fill="#232B3B" />)}
+    <circle class="pulse-svg" cx={shapes.dot[0]} cy={shapes.dot[1]} r="4" fill="#3CCB98" />
+    <circle class="pop" style="--i:4" cx={shapes.dot[0]} cy={shapes.dot[1]} r="4" fill="#16AB79" />
+  </svg>
+</div>

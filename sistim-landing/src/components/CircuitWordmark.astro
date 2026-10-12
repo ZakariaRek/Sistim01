@@ -1,0 +1,57 @@
+---
+// The circuit wordmark, rebuilt in two layers so it can draw itself:
+//  1. the white letterforms, keyed out of the original logo (raster, transparent)
+//  2. the green circuit traced as SVG in the same 1800×900 coordinate space
+// The logo itself is never mirrored in RTL.
+interface Props { class?: string; mode?: 'load' | 'scroll'; alt: string; eager?: boolean }
+const { class: cls = '', mode = 'load', alt, eager = false } = Astro.props;
+
+// [x, y] centres of ring nodes, measured on the original artwork
+const rings = [[68, 230], [500, 145], [697, 113], [1405, 167], [160, 615], [1133, 475], [1432, 475], [1602, 562]];
+const traces = [
+  'M85 212 L152 143 L476 143',
+  'M720 113 L958 113 L1012 166',
+  'M815 325 L950 167 L1381 167',
+  'M1465 168 L1578 168 L1613 131',
+  'M176 597 L290 472 L328 472',
+  'M538 475 L1110 475',
+  'M1455 475 L1520 475 L1586 545',
+];
+const rays = ['M1640 28 L1644 48', 'M1680 76 L1707 57', 'M1690 118 L1718 124'];
+---
+<div class:list={['relative aspect-[2/1] w-full select-none', mode === 'load' ? 'draw-on-load' : 'draw-on-scroll', cls]} dir="ltr">
+  <picture>
+    <source type="image/avif" srcset="/brand/wordmark-letters-720.avif 720w, /brand/wordmark-letters-1200.avif 1200w" sizes="(min-width: 1024px) 40vw, 80vw" />
+    <source type="image/webp" srcset="/brand/wordmark-letters-720.webp 720w, /brand/wordmark-letters-1200.webp 1200w" sizes="(min-width: 1024px) 40vw, 80vw" />
+    <img
+      src="/brand/wordmark-letters-720.png"
+      width="1800" height="900"
+      alt={alt}
+      class="wm-letters absolute inset-0 h-full w-full"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      decoding="async"
+    />
+  </picture>
+  <svg class="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 1800 900" fill="none" aria-hidden="true">
+    <g stroke="#16AB79" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+      {traces.map((d, i) => <path class="draw" pathLength="1" d={d} style={`--i:${i}`} />)}
+      {rays.map((d, i) => <path class="draw" pathLength="1" d={d} stroke-width="12" style={`--i:${i + 8}`} />)}
+    </g>
+    <g stroke="#16AB79" stroke-width="13">
+      {rings.map(([cx, cy], i) => <circle class="pop" cx={cx} cy={cy} r="21" style={`--i:${i}`} />)}
+    </g>
+    <circle class="pulse-svg" cx="1632" cy="112" r="28" fill="#3CCB98" opacity="0.6" />
+    <circle class="pop" cx="1632" cy="112" r="28" fill="#16AB79" style="--i:6" />
+    <path class="pop wm-underline" style="--i:9" fill="#16AB79" d="M392 861 C620 836 980 818 1290 836 C1390 842 1452 851 1458 859 C1452 868 1410 878 1330 878 C1020 870 700 864 392 864 Z" />
+  </svg>
+</div>
+
+<style>
+  /* Letters reveal right-to-left, the way the Arabic is written */
+  :global(html.motion) .draw-on-load .wm-letters {
+    clip-path: inset(0 0 0 100%);
+    animation: wm-wipe 1.4s var(--ease-out-expo) 0.15s forwards;
+  }
+  @keyframes wm-wipe { to { clip-path: inset(0 0 0 0); } }
+</style>

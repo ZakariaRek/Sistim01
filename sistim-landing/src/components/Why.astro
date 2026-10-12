@@ -1,0 +1,39 @@
+---
+import { t, type Locale } from '../i18n';
+import SectionHeader from './SectionHeader.astro';
+interface Props { locale: Locale }
+const d = t(Astro.props.locale);
+---
+<section id="why" class="relative py-20 md:py-28" aria-labelledby="why-title">
+  <div class="shell">
+    <SectionHeader id="why-title" num="04" kicker={d.why.kicker} title={d.why.title} />
+    <div class="glass mt-14 overflow-hidden rounded-[1.75rem]" data-reveal="item">
+      <ul class="grid sm:grid-cols-2 lg:grid-cols-4">
+        {d.why.items.map((w, i) => (
+          <li class="why-cell relative p-7 md:p-8">
+            <svg class="mb-8 rtl:-scale-x-100" width="100%" height="24" viewBox="0 0 220 24" preserveAspectRatio="xMinYMid meet" fill="none" aria-hidden="true">
+              <circle cx="8" cy="12" r="6" stroke="#16AB79" stroke-width="1.5" />
+              <path d={i % 2 ? 'M14 12h60l10-8h40' : 'M14 12h40l10 8h70'} stroke="#16AB79" stroke-opacity="0.5" stroke-width="1.5" />
+              <circle cx={i % 2 ? 126 : 136} cy={i % 2 ? 4 : 20} r="3" fill="#16AB79" />
+            </svg>
+            <h3 class="text-xl font-semibold text-white">{w.title}</h3>
+            <p class="mt-3 text-muted">{w.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-cell + .why-cell { border-top: 1px solid rgb(255 255 255 / 0.08); }
+  @media (min-width: 640px) {
+    .why-cell + .why-cell { border-top: 0; }
+    .why-cell:nth-child(n + 3) { border-top: 1px solid rgb(255 255 255 / 0.08); }
+    .why-cell:nth-child(even) { border-inline-start: 1px solid rgb(255 255 255 / 0.08); }
+  }
+  @media (min-width: 1024px) {
+    .why-cell:nth-child(n + 3) { border-top: 0; }
+    .why-cell + .why-cell { border-inline-start: 1px solid rgb(255 255 255 / 0.08); }
+  }
+</style>

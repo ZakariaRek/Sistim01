@@ -1,0 +1,60 @@
+---
+import { t, LOCALES, LOCALE_META, type Locale } from '../i18n';
+import { CONTACT, whatsappHref, telHref, encodedEmail } from '../config/contact';
+import { BRAND_NAME } from '../config/site';
+import Icon from './Icon.astro';
+import CircuitDivider from './CircuitDivider.astro';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const d = t(locale);
+const year = new Date().getFullYear();
+---
+<footer class="relative mt-10 border-t border-white/8 bg-navy-950 pb-[max(2rem,env(safe-area-inset-bottom))]">
+  <CircuitDivider variant={3} class="-mt-10" />
+  <div class="shell grid gap-12 pt-6 md:grid-cols-12">
+    <div class="md:col-span-5">
+      <div class="flex items-center gap-4">
+        <picture>
+          <source srcset="/brand/mark.avif" type="image/avif" />
+          <source srcset="/brand/mark.webp" type="image/webp" />
+          <img src="/brand/mark.png" width="56" height="56" alt="" loading="lazy" class="size-14" />
+        </picture>
+        <picture>
+          <source type="image/avif" srcset="/brand/wordmark-circuit-480.avif 1x, /brand/wordmark-circuit-960.avif 2x" />
+          <source type="image/webp" srcset="/brand/wordmark-circuit-480.webp 1x, /brand/wordmark-circuit-960.webp 2x" />
+          <img src="/brand/wordmark-circuit-480.png" width="180" height="92" alt={BRAND_NAME} loading="lazy" class="h-[92px] w-[180px]" />
+        </picture>
+      </div>
+      <p class="mt-6 max-w-sm text-muted">{d.footer.line}</p>
+    </div>
+
+    <div class="md:col-span-3">
+      <h2 class="label mb-4">{d.footer.languages}</h2>
+      <ul class="space-y-1">
+        {LOCALES.map((l) => (
+          <li>
+            <a href={LOCALE_META[l].path} hreflang={LOCALE_META[l].lang} lang={LOCALE_META[l].lang} data-lang-link={l} aria-current={l === locale ? 'true' : undefined}
+              class:list={['inline-flex min-h-11 items-center gap-2 transition-colors hover:text-white', l === locale ? 'text-white' : 'text-muted']}>
+              {l === locale && <span class="node scale-75" aria-hidden="true"></span>}
+              {LOCALE_META[l].native}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="md:col-span-4">
+      <h2 class="label mb-4">{d.nav.contact}</h2>
+      <ul class="space-y-1">
+        <li><a href={whatsappHref()} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center gap-3 text-muted transition-colors hover:text-white"><Icon name="whatsapp" size={18} /><span class="ltr">{CONTACT.phoneDisplay}</span><span class="sr-only">{d.a11y.newTab}</span></a></li>
+        <li><a href={telHref} class="inline-flex min-h-11 items-center gap-3 text-muted transition-colors hover:text-white"><Icon name="phone" size={18} /><span class="ltr">{CONTACT.phoneDisplay}</span></a></li>
+        <li><a href="#contact" data-eml={encodedEmail()} class="footer-eml inline-flex min-h-11 items-center gap-3 text-muted transition-colors hover:text-white"><Icon name="mail" size={18} /><span class="ltr" data-eml-text>{d.contact.direct.email}</span></a></li>
+        <li><a href={CONTACT.instagramUrl} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center gap-3 text-muted transition-colors hover:text-white"><Icon name="instagram" size={18} /><span class="ltr">{CONTACT.instagramHandle}</span><span class="sr-only">{d.a11y.newTab}</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="shell mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-6 text-sm text-muted">
+    <p>© <span class="ltr">{year}</span> {BRAND_NAME}. {d.footer.rights}</p>
+    <p class="flex items-center gap-2"><span class="node scale-75" aria-hidden="true"></span>{d.footer.location}</p>
+  </div>
+</footer>

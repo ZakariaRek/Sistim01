@@ -1,0 +1,365 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Fonts: Readex Pro (variable 160–700), self-hosted, Arabic + Latin
+------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Readex Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 160 700;
+  src: url('/fonts/readex-pro-arabic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 160 700;
+  src: url('/fonts/readex-pro-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 160 700;
+  src: url('/fonts/readex-pro-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Metric-matched fallback to keep CLS near zero while the webfont swaps in */
+@font-face {
+  font-family: 'Readex Fallback';
+  src: local('Arial');
+  size-adjust: 104%;
+  ascent-override: 98%;
+  descent-override: 30%;
+}
+
+/* ------------------------------------------------------------------
+   Design tokens (colours sampled from the logo files)
+   Contrast (WCAG): white/navy-900 14.2 · muted/navy-900 6.95 · muted/navy-800 6.0
+   emerald-500/navy-900 4.8 (text OK ≥ 16px) · emerald-400/navy-800 5.96
+   navy-950 on emerald-500 (buttons) 5.73
+------------------------------------------------------------------- */
+@theme {
+  --color-navy-950: #171d29;
+  --color-navy-900: #232b3b; /* brand background */
+  --color-navy-800: #2c3548;
+  --color-navy-700: #3a4559;
+  --color-emerald-300: #7fdcbb;
+  --color-emerald-400: #3ccb98;
+  --color-emerald-500: #16ab79; /* brand accent */
+  --color-emerald-600: #0e7f59;
+  --color-mist: #d3f2e6;
+  --color-muted: #aeb6c4;
+  --color-white: #ffffff;
+
+  --font-sans: 'Readex Pro', 'Readex Fallback', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Consolas, monospace;
+
+  /* Fluid type scale */
+  --text-hero: clamp(2.3rem, 1.15rem + 4vw, 4.85rem);
+  --text-display: clamp(1.9rem, 1.15rem + 3vw, 3.6rem);
+  --text-lead: clamp(1.05rem, 0.98rem + 0.35vw, 1.3rem);
+
+  /* Motion tokens (mirrored in src/scripts/tokens.ts) */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 0.35s;
+  --duration-base: 0.6s;
+  --duration-slow: 0.9s;
+
+  --animate-pulse-node: pulse-node 2.6s var(--ease-out-quart) infinite;
+}
+
+@keyframes pulse-node {
+  0% { transform: scale(1); opacity: 0.9; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  html {
+    background: var(--color-navy-900);
+    color: var(--color-white);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 6rem;
+    color-scheme: dark;
+  }
+  html:not(.lenis) { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html:not(.lenis) { scroll-behavior: auto; }
+  }
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100svh;
+  }
+  /* Arabic: no tracking, a little more air between lines */
+  :lang(ar) body { line-height: 1.85; }
+  :lang(ar) *, :lang(ar) *::before, :lang(ar) *::after { letter-spacing: 0 !important; }
+  h1, h2, h3 { line-height: 1.08; text-wrap: balance; font-weight: 600; }
+  :lang(ar) h1, :lang(ar) h2, :lang(ar) h3 { line-height: 1.4; }
+  p { text-wrap: pretty; }
+  ::selection { background: var(--color-emerald-500); color: var(--color-navy-950); }
+
+  :focus-visible {
+    outline: 2px solid var(--color-emerald-400);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  /* Phone numbers and other LTR islands inside RTL */
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+}
+
+/* ------------------------------------------------------------------
+   Components
+------------------------------------------------------------------- */
+@layer components {
+  .shell { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+  @media (min-width: 768px) { .shell { width: min(100% - 4rem, 76rem); } }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-emerald-400);
+  }
+  :lang(ar) .label { font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; }
+
+  /* Buttons */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding-inline: 1.4rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out-expo), color var(--duration-fast) var(--ease-out-expo),
+      box-shadow var(--duration-fast) var(--ease-out-expo), border-color var(--duration-fast) var(--ease-out-expo);
+  }
+  .btn-primary {
+    background: var(--color-emerald-500);
+    color: var(--color-navy-950);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12) inset, 0 10px 30px -12px rgb(22 171 121 / 0.7);
+  }
+  .btn-primary:hover { background: var(--color-emerald-400); box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2) inset, 0 14px 40px -12px rgb(22 171 121 / 0.85); }
+  .btn-ghost {
+    color: var(--color-white);
+    border: 1px solid rgb(255 255 255 / 0.18);
+    background: rgb(255 255 255 / 0.03);
+  }
+  .btn-ghost:hover { border-color: var(--color-emerald-400); background: rgb(22 171 121 / 0.08); }
+  .btn .arrow { transition: transform var(--duration-fast) var(--ease-out-expo); }
+  .btn:hover .arrow { transform: translateX(4px); }
+  [dir='rtl'] .btn .arrow { transform: scaleX(-1); }
+  [dir='rtl'] .btn:hover .arrow { transform: scaleX(-1) translateX(4px); }
+
+  /* Glass surface with gradient hairline */
+  .glass {
+    background: linear-gradient(180deg, rgb(44 53 72 / 0.72), rgb(35 43 59 / 0.6)) padding-box,
+      linear-gradient(160deg, rgb(255 255 255 / 0.2), rgb(22 171 121 / 0.22) 45%, rgb(255 255 255 / 0.05)) border-box;
+    border: 1px solid transparent;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  /* Card with corner circuit brackets + hover glow */
+  .card {
+    position: relative;
+    border-radius: 1.25rem;
+    background: linear-gradient(180deg, var(--color-navy-800), rgb(35 43 59 / 0.9)) padding-box,
+      linear-gradient(160deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.04) 50%, rgb(255 255 255 / 0.08)) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 2.8px 2.2px rgb(0 0 0 / 0.034), 0 6.7px 5.3px rgb(0 0 0 / 0.048), 0 12.5px 10px rgb(0 0 0 / 0.06),
+      0 22.3px 17.9px rgb(0 0 0 / 0.072), 0 41.8px 33.4px rgb(0 0 0 / 0.086);
+    transition: background var(--duration-base) var(--ease-out-expo);
+  }
+  .card::after {
+    /* animated gradient border on hover (masked ring) */
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgb(60 203 152 / 0.9), rgb(22 171 121 / 0.25) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out-expo);
+    pointer-events: none;
+  }
+  .card:hover::after, .card:focus-within::after { opacity: 1; }
+  .card-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 0%), rgb(22 171 121 / 0.1), transparent 60%);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out-expo);
+    pointer-events: none;
+  }
+  .card-glow:hover::before { opacity: 1; }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    padding-inline: 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    color: var(--color-mist);
+    background: rgb(22 171 121 / 0.1);
+    border: 1px solid rgb(22 171 121 / 0.25);
+  }
+
+  /* Circuit node */
+  .node {
+    position: relative;
+    display: inline-block;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 999px;
+    background: var(--color-emerald-500);
+    box-shadow: 0 0 12px rgb(22 171 121 / 0.8);
+  }
+  .node::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-emerald-400);
+    animation: var(--animate-pulse-node);
+  }
+  .node-ring {
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-emerald-500);
+  }
+
+  /* Split words (build-time), animated by GSAP. Never split Arabic by letter. */
+  .split .w {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-block: 0.14em;
+    margin-block: -0.14em;
+  }
+  .split .w > span { display: inline-block; will-change: transform; }
+
+  /* Form */
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    border-radius: 0.85rem;
+    background: rgb(23 29 41 / 0.7);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    padding: 0.75rem 1rem;
+    color: var(--color-white);
+    font: inherit;
+    transition: border-color var(--duration-fast) var(--ease-out-expo), box-shadow var(--duration-fast) var(--ease-out-expo);
+  }
+  .field::placeholder { color: rgb(174 182 196 / 0.75); }
+  .field:hover { border-color: rgb(255 255 255 / 0.28); }
+  .field:focus { outline: none; border-color: var(--color-emerald-400); box-shadow: 0 0 0 3px rgb(22 171 121 / 0.25); }
+  .field[aria-invalid='true'] { border-color: #f59e8b; }
+  select.field { appearance: none; background-image: none; }
+}
+
+/* ------------------------------------------------------------------
+   Motion gating
+   html.motion is set inline in <head> only when motion is allowed.
+   A failsafe removes it if the motion script never boots.
+------------------------------------------------------------------- */
+html.motion [data-reveal='item'] { opacity: 0; }
+html.motion .split[data-reveal='words'] .w > span { transform: translateY(110%); }
+
+/* Hero intro is CSS-driven so it never waits for JS (good for LCP) */
+html.motion .hero-in .w > span {
+  transform: translateY(110%);
+  animation: word-up var(--duration-slow) var(--ease-out-expo) forwards;
+  animation-delay: calc(0.25s + var(--i, 0) * 0.06s);
+}
+html.motion .hero-fade {
+  opacity: 0;
+  animation: fade-up var(--duration-slow) var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0.6s);
+}
+@keyframes word-up { to { transform: translateY(0); } }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Circuit drawing (stroke-dashoffset). pathLength="1" on every path. */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
+html.motion .draw-on-load .draw {
+  stroke-dashoffset: 1;
+  animation: draw 1.6s var(--ease-out-quart) forwards;
+  animation-delay: calc(0.5s + var(--i, 0) * 0.12s);
+}
+html.motion .draw-on-load .pop {
+  opacity: 0;
+  transform: scale(0.2);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop 0.6s var(--ease-out-expo) forwards;
+  animation-delay: calc(1.2s + var(--i, 0) * 0.12s);
+}
+html.motion .draw-on-scroll .draw { stroke-dashoffset: 1; transition: stroke-dashoffset 1.6s var(--ease-out-quart); transition-delay: calc(var(--i, 0) * 0.1s); }
+html.motion .draw-on-scroll.is-in .draw { stroke-dashoffset: 0; }
+html.motion .draw-on-scroll .pop { opacity: 0; transition: opacity 0.5s var(--ease-out-expo); transition-delay: calc(0.8s + var(--i, 0) * 0.1s); }
+html.motion .draw-on-scroll.is-in .pop { opacity: 1; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { to { opacity: 1; transform: scale(1); } }
+
+.pulse-svg { transform-box: fill-box; transform-origin: center; animation: pulse-node 2.8s var(--ease-out-quart) infinite; }
+
+/* Marquee */
+.marquee-track { animation: marquee var(--marquee-duration, 38s) linear infinite; }
+.marquee:hover .marquee-track, .marquee.is-paused .marquee-track { animation-play-state: paused; }
+[dir='rtl'] .marquee-track { animation-name: marquee-rtl; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes marquee-rtl { to { transform: translateX(50%); } }
+
+/* Loops pause when off-screen (class toggled by IntersectionObserver) or tab hidden */
+.offscreen *, .offscreen, html.tab-hidden * { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+  .marquee-track { animation: none !important; flex-wrap: wrap; justify-content: center; width: 100% !important; }
+  .marquee-track > [aria-hidden='true'] { display: none; }
+  .node::after, .pulse-svg { animation: none !important; display: none; }
+}
+
+/* Progressive blur under the nav */
+.progressive-blur { position: fixed; inset: 0 0 auto 0; height: 6.5rem; pointer-events: none; z-index: 40; }
+.progressive-blur > div { position: absolute; inset: 0; }
+.progressive-blur > div:nth-child(1) { backdrop-filter: blur(1px); mask: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%); }
+.progressive-blur > div:nth-child(2) { backdrop-filter: blur(3px); mask: linear-gradient(to bottom, #000 0%, #000 30%, transparent 70%); }
+.progressive-blur > div:nth-child(3) { backdrop-filter: blur(8px); mask: linear-gradient(to bottom, #000 0%, #000 20%, transparent 50%); }
+.progressive-blur::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgb(23 29 41 / 0.75), transparent); }
+
+/* Background frame: faint vertical rails + grid */
+.bg-grid {
+  background-image: linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}

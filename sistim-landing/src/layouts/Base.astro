@@ -1,0 +1,111 @@
+---
+import '../styles/global.css';
+import { LOCALES, LOCALE_META, t, type Locale } from '../i18n';
+import { SITE_URL, BRAND_NAME } from '../config/site';
+import { CONTACT } from '../config/contact';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const meta = LOCALE_META[locale];
+const d = t(locale);
+const canonical = `${SITE_URL}${meta.path}`;
+const ogImage = `${SITE_URL}/og/og-${locale}.png`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: BRAND_NAME,
+  alternateName: 'سيستيم',
+  url: `${SITE_URL}/`,
+  logo: `${SITE_URL}/icon-512.png`,
+  description: d.meta.description,
+  email: CONTACT.email,
+  telephone: CONTACT.phoneIntl,
+  address: { '@type': 'PostalAddress', addressLocality: CONTACT.city, addressCountry: CONTACT.countryCode },
+  sameAs: [CONTACT.instagramUrl, ...CONTACT.otherSocials],
+  contactPoint: [{ '@type': 'ContactPoint', telephone: CONTACT.phoneIntl, contactType: 'customer service', availableLanguage: ['ar', 'fr', 'en'] }],
+};
+
+// Fonts to preload: Arabic pages need the Arabic + Latin subsets, FR/EN only Latin.
+const preloads = locale === 'ar'
+  ? ['/fonts/readex-pro-arabic-wght-normal.woff2', '/fonts/readex-pro-latin-wght-normal.woff2']
+  : ['/fonts/readex-pro-latin-wght-normal.woff2'];
+
+// Language suggestion strings (only used on the Darija root for FR/EN browsers)
+const suggest = locale === 'ar' ? JSON.stringify({ fr: t('fr').suggest, en: t('en').suggest }) : '';
+---
+<!doctype html>
+<html lang={meta.lang} dir={meta.dir} data-locale={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{d.meta.title}</title>
+    <meta name="description" content={d.meta.description} />
+    <link rel="canonical" href={canonical} />
+    {LOCALES.map((l) => <link rel="alternate" hreflang={LOCALE_META[l].lang} href={`${SITE_URL}${LOCALE_META[l].path}`} />)}
+    <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/`} />
+
+    {preloads.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+
+    <meta name="theme-color" content="#232B3B" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={BRAND_NAME} />
+    <meta property="og:title" content={d.meta.title} />
+    <meta property="og:description" content={d.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={meta.og} />
+    {LOCALES.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={LOCALE_META[l].og} />)}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={d.meta.ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={d.meta.title} />
+    <meta name="twitter:description" content={d.meta.description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Before paint: remember language choice + decide whether motion is allowed -->
+    <script is:inline define:vars={{ locale }}>
+      (function () {
+        var d = document.documentElement;
+        try {
+          var saved = localStorage.getItem('sistim-lang');
+          if (locale === 'ar' && location.pathname === '/' && (saved === 'fr' || saved === 'en')) {
+            location.replace('/' + saved + '/' + location.hash);
+            return;
+          }
+        } catch (e) {}
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          d.classList.add('motion');
+          // Failsafe: if the motion script never boots, show everything.
+          setTimeout(function () { if (!window.__sistimMotion) d.classList.remove('motion'); }, 3500);
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-navy-900 text-white">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[100] focus:rounded-full focus:bg-emerald-500 focus:px-5 focus:py-3 focus:text-navy-950">{d.a11y.skip}</a>
+    <div class="scroll-progress fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-emerald-400 rtl:origin-right" style="transform:scaleX(0)" aria-hidden="true"></div>
+    <div class="progressive-blur" aria-hidden="true"><div></div><div></div><div></div></div>
+    <slot />
+    {suggest && (
+      <div id="lang-suggest" data-suggest={suggest} hidden role="status" class="glass fixed bottom-[max(1rem,env(safe-area-inset-bottom))] start-4 z-40 max-w-[calc(100%-6.5rem)] rounded-2xl p-4 text-sm md:max-w-sm" dir="ltr">
+        <p class="mb-3 text-white" data-suggest-text></p>
+        <div class="flex flex-wrap gap-2">
+          <a class="btn btn-primary min-h-11 px-4 text-sm" data-suggest-go href="/fr/"></a>
+          <button type="button" class="btn btn-ghost min-h-11 px-4 text-sm" data-suggest-stay></button>
+        </div>
+      </div>
+    )}
+    <script>
+      import '../scripts/boot';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+---
+import SplitWords from './SplitWords.astro';
+interface Props { kicker: string; title: string; intro?: string; id: string; num: string; class?: string }
+const { kicker, title, intro, id, num, class: cls = '' } = Astro.props;
+---
+<header class:list={['max-w-3xl', cls]}>
+  <p class="mb-5 flex items-center gap-3" data-reveal="item">
+    <span class="font-mono text-xs text-white/35" aria-hidden="true">{num}</span>
+    <span class="h-px w-8 bg-emerald-500/60" aria-hidden="true"></span>
+    <span class="label">{kicker}</span>
+  </p>
+  <SplitWords id={id} as="h2" text={title} class="text-display font-semibold tracking-[-0.02em] text-white" />
+  {intro && <p class="mt-5 max-w-2xl text-lead text-muted" data-reveal="item">{intro}</p>}
+</header>

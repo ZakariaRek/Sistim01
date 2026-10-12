@@ -1,0 +1,27 @@
+---
+import { LOCALES, LOCALE_META, t, type Locale } from '../i18n';
+interface Props { locale: Locale; class?: string; id?: string }
+const { locale, class: cls = '', id } = Astro.props;
+---
+<nav aria-label={t(locale).a11y.langSwitcher} class={cls} id={id}>
+  <ul class="flex items-center gap-0.5 rounded-full border border-white/10 bg-navy-950/50 p-1" dir="ltr">
+    {LOCALES.map((l) => (
+      <li>
+        <a
+          href={LOCALE_META[l].path}
+          hreflang={LOCALE_META[l].lang}
+          lang={LOCALE_META[l].lang}
+          data-lang-link={l}
+          aria-current={l === locale ? 'true' : undefined}
+          class:list={[
+            'grid h-11 min-w-11 place-items-center rounded-full px-2.5 font-mono text-xs font-medium tracking-[0.08em] transition-colors duration-300',
+            l === locale ? 'bg-emerald-500 text-navy-950' : 'text-muted hover:bg-white/5 hover:text-white',
+          ]}
+        >
+          <span aria-hidden="true">{LOCALE_META[l].short}</span>
+          <span class="sr-only">{LOCALE_META[l].native}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

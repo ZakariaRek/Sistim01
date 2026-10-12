@@ -1,0 +1,36 @@
+---
+import { t, type Locale } from '../i18n';
+import SectionHeader from './SectionHeader.astro';
+interface Props { locale: Locale }
+const d = t(Astro.props.locale);
+// Simple line icons, one per service (window, bag, calendar, dashboard)
+const icons = [
+  'M3 5h18v14H3z M3 9h18 M6 7h.01 M8.5 7h.01',
+  'M5 8h14l-1.2 12H6.2z M9 8V6a3 3 0 0 1 6 0v2',
+  'M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4 M8 14h3 M13 14h3 M8 17h3',
+  'M3 4h18v16H3z M3 9h18 M8 9v11 M11 13h7 M11 16h4',
+];
+---
+<section id="services" class="relative py-20 md:py-28" aria-labelledby="services-title">
+  <div class="shell">
+    <SectionHeader id="services-title" num="01" kicker={d.services.kicker} title={d.services.title} intro={d.services.intro} />
+    <ul class="mt-14 grid gap-5 md:grid-cols-2">
+      {d.services.items.map((s, i) => (
+        <li class="card card-glow group min-w-0 p-7 md:p-9" data-reveal="item" data-tilt>
+          <div class="flex items-center gap-4">
+            <div class="grid size-12 shrink-0 place-items-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={icons[i]} /></svg>
+            </div>
+            <svg class="h-3 w-0 min-w-0 flex-1 rtl:-scale-x-100" viewBox="0 0 200 12" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M0 6h120l6-5h74" stroke="#16AB79" stroke-opacity="0.35" stroke-width="1.2" vector-effect="non-scaling-stroke" /></svg>
+            <span class="font-mono text-xs text-white/40" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          </div>
+          <h3 class="mt-7 text-2xl font-semibold text-white">{s.title}</h3>
+          <p class="mt-3 max-w-md text-muted">{s.body}</p>
+          <ul class="mt-6 flex flex-wrap gap-2">
+            {s.tags.map((tag) => <li class="tag">{tag}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

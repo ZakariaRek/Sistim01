@@ -1,0 +1,47 @@
+---
+import { t, type Locale } from '../i18n';
+import SectionHeader from './SectionHeader.astro';
+interface Props { locale: Locale }
+const d = t(Astro.props.locale);
+---
+<section id="process" class="relative py-20 md:py-28" aria-labelledby="process-title">
+  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-8">
+    <div class="lg:col-span-5">
+      <div class="lg:sticky lg:top-32">
+        <SectionHeader id="process-title" num="03" kicker={d.process.kicker} title={d.process.title} intro={d.process.intro} />
+      </div>
+    </div>
+    <ol class="timeline relative lg:col-span-7" data-timeline style="--progress:0">
+      <!-- base line + progress fill (scaleY on the compositor) -->
+      <span class="absolute start-[1.1875rem] top-6 bottom-6 w-px bg-white/10" aria-hidden="true"></span>
+      <span class="timeline-fill absolute start-[1.1875rem] top-6 bottom-6 w-px origin-top bg-gradient-to-b from-emerald-400 to-emerald-500 shadow-[0_0_12px_rgb(22_171_121/0.8)]" aria-hidden="true"></span>
+      {d.process.steps.map((s, i) => (
+        <li class="step relative grid grid-cols-[2.5rem_1fr] gap-5 pb-12 last:pb-0" data-step>
+          <span class="step-node relative z-10 mt-1 grid size-10 place-items-center rounded-full border border-white/15 bg-navy-900 font-mono text-xs text-muted transition-colors duration-500" data-step-node aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <div class="step-body card p-6 md:p-7 transition-[border-color] duration-500">
+            <h3 class="text-xl font-semibold text-white md:text-2xl">
+              <span class="sr-only">{i + 1}. </span>{s.title}
+            </h3>
+            <p class="mt-2 text-muted">{s.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline-fill { transform: scaleY(var(--progress)); }
+  .step.is-active .step-node {
+    border-color: var(--color-emerald-400);
+    background: var(--color-emerald-500);
+    color: var(--color-navy-950);
+    box-shadow: 0 0 0 6px rgb(22 171 121 / 0.15), 0 0 24px rgb(22 171 121 / 0.6);
+  }
+  .step.is-active .step-body {
+    background: linear-gradient(180deg, var(--color-navy-800), rgb(35 43 59 / 0.9)) padding-box,
+      linear-gradient(160deg, rgb(60 203 152 / 0.6), rgb(22 171 121 / 0.15) 50%, rgb(255 255 255 / 0.06)) border-box;
+  }
+</style>

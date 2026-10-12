@@ -1,0 +1,57 @@
+---
+import { siWhatsapp } from 'simple-icons';
+import { t, type Locale } from '../i18n';
+import { CONTACT, telHref, whatsappHref, encodedEmail } from '../config/contact';
+import SectionHeader from './SectionHeader.astro';
+import Icon from './Icon.astro';
+import ContactForm from './islands/ContactForm';
+interface Props { locale: Locale }
+const d = t(Astro.props.locale);
+const eml = encodedEmail();
+const rows = [
+  { href: whatsappHref(), label: d.contact.direct.whatsapp, value: CONTACT.phoneDisplay, icon: 'whatsapp', external: true },
+  { href: telHref, label: d.contact.direct.call, value: CONTACT.phoneDisplay, icon: 'phone', external: false },
+  { href: '#contact', label: d.contact.direct.email, value: '', icon: 'mail', external: false, eml },
+  { href: CONTACT.instagramUrl, label: d.contact.direct.instagram, value: CONTACT.instagramHandle, icon: 'instagram', external: true },
+] as const;
+---
+<section id="contact" class="relative py-20 md:py-28" aria-labelledby="contact-title">
+  <div class="shell">
+    <SectionHeader id="contact-title" num="06" kicker={d.contact.kicker} title={d.contact.title} intro={d.contact.intro} />
+    <div class="mt-14 grid gap-6 lg:grid-cols-12">
+      <div class="glass rounded-[1.75rem] p-6 md:p-9 lg:col-span-7" data-reveal="item">
+        <ContactForm client:visible s={d.contact.form} wa={CONTACT.whatsappNumber} eml={eml} newTab={d.a11y.newTab} waIcon={siWhatsapp.path} />
+      </div>
+      <div class="lg:col-span-5" data-reveal="item">
+        <h3 class="label mb-4">{d.contact.direct.title}</h3>
+        <ul class="divide-y divide-white/8 overflow-hidden rounded-[1.75rem] border border-white/10 bg-navy-950/40">
+          {rows.map((r) => (
+            <li>
+              <a href={r.href} data-eml={'eml' in r ? r.eml : undefined} target={r.external ? '_blank' : undefined} rel={r.external ? 'noopener' : undefined} class="contact-row">
+                <span class="contact-icon"><Icon name={r.icon} size={20} /></span>
+                <span class="min-w-0 flex-1">
+                  <span class="block text-sm text-muted">{r.label}</span>
+                  <span class="ltr block truncate text-lg text-white" data-eml-text={'eml' in r ? '' : undefined}>{r.value}</span>
+                </span>
+                <Icon name="arrow" size={18} class="arrow shrink-0 text-muted" />
+                {r.external && <span class="sr-only">{d.a11y.newTab}</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-row { display: flex; align-items: center; gap: 1rem; min-height: 4.75rem; padding: 0.9rem 1.25rem; transition: background-color var(--duration-fast) var(--ease-out-expo); }
+  .contact-row:hover { background: rgb(22 171 121 / 0.07); }
+  .contact-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: 0.8rem; color: var(--color-emerald-400); background: rgb(22 171 121 / 0.1); border: 1px solid rgb(22 171 121 / 0.25); }
+  .contact-row :global(.arrow) { transition: transform var(--duration-fast) var(--ease-out-expo); }
+  .contact-row:hover :global(.arrow) { transform: translateX(4px); }
+  :global([dir='rtl']) .contact-row :global(.arrow) { transform: scaleX(-1); }
+  :global([dir='rtl']) .contact-row:hover :global(.arrow) { transform: scaleX(-1) translateX(4px); }
+  /* LTR islands (phone, email) still align with the reading start of the page */
+  :global([dir='rtl']) .contact-row .ltr { text-align: right; }
+</style>

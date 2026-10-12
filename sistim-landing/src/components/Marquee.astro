@@ -1,0 +1,28 @@
+---
+import { t, type Locale } from '../i18n';
+interface Props { locale: Locale }
+const d = t(Astro.props.locale);
+const items = d.domains.items;
+---
+<section class="relative border-y border-white/8 bg-navy-950/60 py-6" aria-labelledby="domains-label">
+  <div class="shell mb-4 flex items-center gap-3">
+    <span class="node-ring" aria-hidden="true"></span>
+    <h2 id="domains-label" class="label">{d.domains.label}</h2>
+  </div>
+  <div class="marquee group relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]" data-loop>
+    <div class="marquee-track flex w-max">
+      {[0, 1].map((copy) => (
+        <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {items.map((item) => (
+            <li class="flex items-center gap-8 pe-8 text-[clamp(1.35rem,1rem+1.6vw,2.4rem)] font-medium text-white/90 whitespace-nowrap">
+              <span>{item}</span>
+              <svg width="38" height="14" viewBox="0 0 38 14" fill="none" aria-hidden="true" class="shrink-0 rtl:-scale-x-100">
+                <path d="M0 7h22l6-5h6" stroke="#16AB79" stroke-width="1.5" /><circle cx="34" cy="2.5" r="2.5" fill="#16AB79" />
+              </svg>
+            </li>
+          ))}
+        </ul>
+      ))}
+    </div>
+  </div>
+</section>

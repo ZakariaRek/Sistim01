@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import Marquee from './Marquee.astro';
+import Services from './Services.astro';
+import Offers from './Offers.astro';
+import Process from './Process.astro';
+import Why from './Why.astro';
+import Work from './Work.astro';
+import Contact from './Contact.astro';
+import Footer from './Footer.astro';
+import FloatingWhatsApp from './FloatingWhatsApp.astro';
+import CircuitDivider from './CircuitDivider.astro';
+import type { Locale } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+<Base locale={locale}>
+  <Nav locale={locale} />
+  <main id="main" tabindex="-1" class="outline-none">
+    <Hero locale={locale} />
+    <Marquee locale={locale} />
+    <Services locale={locale} />
+    <CircuitDivider variant={1} />
+    <Offers locale={locale} />
+    <CircuitDivider variant={2} />
+    <Process locale={locale} />
+    <CircuitDivider variant={1} />
+    <Why locale={locale} />
+    <Work locale={locale} />
+    <CircuitDivider variant={2} />
+    <Contact locale={locale} />
+  </main>
+  <Footer locale={locale} />
+  <FloatingWhatsApp locale={locale} />
+</Base>

@@ -1,0 +1,64 @@
+---
+import { t, type Locale } from '../i18n';
+import { whatsappHref } from '../config/contact';
+import Icon from './Icon.astro';
+import SplitWords from './SplitWords.astro';
+import CircuitField from './CircuitField.astro';
+import CircuitWordmark from './CircuitWordmark.astro';
+import HeroScene from './islands/HeroScene';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const d = t(locale);
+---
+<section id="top" class="relative isolate flex min-h-[100svh] items-center overflow-hidden pb-20 pt-28 md:pt-32" aria-labelledby="hero-title" data-loop>
+  <!-- Background: static circuit poster + lazy 3D scene + vignette -->
+  <div class="absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute inset-0 bg-[radial-gradient(1200px_700px_at_70%_30%,rgb(22_171_121/0.10),transparent_60%),linear-gradient(180deg,var(--color-navy-900),var(--color-navy-950))]"></div>
+    <div class="absolute inset-0 rtl:-scale-x-100" data-parallax="0.15">
+      <CircuitField class="circuit-field h-full w-full opacity-70 transition-opacity duration-[1600ms]" />
+    </div>
+    <HeroScene client:media="(min-width: 768px)" />
+    <div class="absolute inset-0 bg-[radial-gradient(900px_600px_at_20%_60%,rgb(23_29_41/0.85),transparent_70%)] rtl:bg-[radial-gradient(900px_600px_at_80%_60%,rgb(23_29_41/0.85),transparent_70%)]"></div>
+    <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-navy-900"></div>
+  </div>
+
+  <div class="shell grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
+    <div class="lg:col-span-7">
+      <p class="hero-fade mb-6 flex items-center gap-3" style="--d:0.1s">
+        <span class="node"></span>
+        <span class="label">{d.hero.kicker}</span>
+      </p>
+      <SplitWords as="h1" id="hero-title" mode="hero" text={d.hero.title} class="text-hero font-semibold tracking-[-0.025em] text-white" />
+      <p class="hero-fade mt-6 max-w-[38rem] text-lead text-muted" style="--d:0.75s">{d.hero.sub}</p>
+      <div class="hero-fade mt-9 flex flex-wrap items-center gap-3" style="--d:0.95s">
+        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary min-h-13 px-6 text-[1.05rem]" data-magnetic>
+          <Icon name="whatsapp" size={20} />
+          <span>{d.hero.ctaPrimary}</span>
+          <span class="sr-only">{d.a11y.newTab}</span>
+        </a>
+        <a href="#offers" class="btn btn-ghost min-h-13 px-6 text-[1.05rem]">
+          <span>{d.hero.ctaSecondary}</span>
+          <Icon name="arrow" size={18} class="arrow" />
+        </a>
+      </div>
+    </div>
+    <div class="order-first mx-auto w-[min(78%,22rem)] lg:order-none lg:col-span-5 lg:w-full lg:max-w-none" data-parallax="-0.25">
+      <CircuitWordmark alt="Sistim, سيستيم" eager />
+    </div>
+  </div>
+
+  <a href="#services" class="hero-fade absolute bottom-6 start-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted md:flex rtl:translate-x-1/2" style="--d:1.4s">
+    <span>{d.hero.scroll}</span>
+    <span class="relative block h-10 w-px overflow-hidden bg-white/15"><span class="scroll-cue absolute inset-x-0 top-0 h-1/2 bg-emerald-400"></span></span>
+  </a>
+</section>
+
+<style>
+  /* When the 3D network is live, the SVG poster steps back and the canvas stays away from the headline */
+  #top[data-scene='on'] :global(.circuit-field) { opacity: 0.22; }
+  #top :global(.hero-scene) { mask-image: radial-gradient(75% 90% at 72% 45%, #000 35%, transparent 85%); }
+  :global([dir='rtl']) #top :global(.hero-scene) { mask-image: radial-gradient(75% 90% at 28% 45%, #000 35%, transparent 85%); }
+  .scroll-cue { animation: cue 2.2s var(--ease-out-quart) infinite; }
+  @keyframes cue { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }
+</style>

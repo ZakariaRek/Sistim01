@@ -1,0 +1,24 @@
+---
+// Interface icons. Brand marks (WhatsApp, Instagram) come from Simple Icons at build time,
+// so no icon code ships to the browser.
+import { siWhatsapp, siInstagram } from 'simple-icons';
+
+interface Props { name: 'whatsapp' | 'instagram' | 'phone' | 'mail' | 'arrow' | 'menu' | 'close' | 'check' | 'globe'; class?: string; size?: number }
+const { name, class: cls = '', size = 20 } = Astro.props;
+
+const filled: Record<string, string> = { whatsapp: siWhatsapp.path, instagram: siInstagram.path };
+const stroked: Record<string, string> = {
+  phone: 'M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
+  mail: 'M4 6h16v12H4z M4 7l8 6 8-6',
+  arrow: 'M5 12h14 M13 6l6 6-6 6',
+  menu: 'M4 8h16 M4 16h16',
+  close: 'M6 6l12 12 M18 6L6 18',
+  check: 'M5 12.5l4.5 4.5L19 7.5',
+  globe: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18 M3 12h18 M12 3c2.8 3 2.8 15 0 18 M12 3c-2.8 3-2.8 15 0 18',
+};
+---
+{filled[name] ? (
+  <svg class={cls} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d={filled[name]} /></svg>
+) : (
+  <svg class={cls} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={stroked[name]} /></svg>
+)}

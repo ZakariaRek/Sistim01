@@ -1,0 +1,52 @@
+---
+// Static circuit background (SVG). It is the hero poster, the reduced-motion version
+// and the small/low-power fallback for the Three.js scene. Generated at build time with a fixed seed.
+interface Props { class?: string; seed?: number; count?: number }
+const { class: cls = '', seed = 7, count = 22 } = Astro.props;
+
+let s = seed;
+const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+const W = 1440, H = 900, G = 48;
+const snap = (v: number) => Math.round(v / G) * G;
+
+type Trace = { d: string; end: [number, number]; start: [number, number]; ring: boolean };
+const traces: Trace[] = [];
+for (let i = 0; i < count; i++) {
+  let x = snap(rnd() * W), y = snap(rnd() * H);
+  const start: [number, number] = [x, y];
+  let d = `M${x} ${y}`;
+  const segs = 2 + Math.floor(rnd() * 3);
+  let horiz = rnd() > 0.35;
+  for (let k = 0; k < segs; k++) {
+    const len = G * (2 + Math.floor(rnd() * 6));
+    if (horiz) x += rnd() > 0.5 ? len : -len;
+    else { const dy = G * (1 + Math.floor(rnd() * 2)); x += rnd() > 0.5 ? dy : -dy; y += rnd() > 0.5 ? dy : -dy; } // 45° jog
+    d += ` L${x} ${y}`;
+    horiz = !horiz;
+  }
+  traces.push({ d, start, end: [x, y], ring: rnd() > 0.45 });
+}
+---
+<svg class={cls} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="cf-fade" cx="70%" cy="40%" r="75%">
+      <stop offset="0" stop-color="#fff" stop-opacity="1" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </radialGradient>
+    <mask id="cf-mask"><rect width={W} height={H} fill="url(#cf-fade)" /></mask>
+  </defs>
+  <g mask="url(#cf-mask)">
+    <g stroke="#16AB79" stroke-opacity="0.32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      {traces.map((t) => <path d={t.d} />)}
+    </g>
+    {traces.map((t, i) => (
+      t.ring
+        ? <circle cx={t.end[0]} cy={t.end[1]} r="5" stroke="#16AB79" stroke-opacity="0.55" stroke-width="1.5" fill="#232B3B" />
+        : <g>
+            {i % 4 === 0 && <circle class="pulse-svg" cx={t.end[0]} cy={t.end[1]} r="4" fill="#3CCB98" style={`animation-delay:${(i % 7) * 0.4}s`} />}
+            <circle cx={t.end[0]} cy={t.end[1]} r="4" fill="#16AB79" fill-opacity="0.85" />
+          </g>
+    ))}
+    {traces.map((t) => <circle cx={t.start[0]} cy={t.start[1]} r="2.5" fill="#16AB79" fill-opacity="0.5" />)}
+  </g>
+</svg>

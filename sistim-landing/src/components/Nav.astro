@@ -1,0 +1,127 @@
+---
+import { t, LOCALE_META, type Locale } from '../i18n';
+import { whatsappHref } from '../config/contact';
+import Icon from './Icon.astro';
+import LangSwitcher from './LangSwitcher.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const d = t(locale);
+const links = [
+  { href: '#services', label: d.nav.services },
+  { href: '#offers', label: d.nav.offers },
+  { href: '#process', label: d.nav.process },
+  { href: '#why', label: d.nav.why },
+  { href: '#work', label: d.nav.work },
+  { href: '#contact', label: d.nav.contact },
+];
+---
+<header class="fixed inset-x-0 top-0 z-50 pt-[max(env(safe-area-inset-top),0.75rem)]">
+  <div class="shell">
+    <div class="glass flex h-16 items-center justify-between gap-3 rounded-full ps-2.5 pe-2 shadow-[0_10px_40px_-20px_rgb(0_0_0/0.6)]">
+      <a href={LOCALE_META[locale].path} class="flex shrink-0 items-center gap-2.5 rounded-full" aria-label={d.a11y.home}>
+        <picture>
+          <source srcset="/brand/mark.avif" type="image/avif" />
+          <source srcset="/brand/mark.webp" type="image/webp" />
+          <img src="/brand/mark.png" width="44" height="44" alt="" class="size-11" />
+        </picture>
+        <picture>
+          <source srcset="/brand/wordmark-swoosh-128.avif 1x, /brand/wordmark-swoosh-256.avif 2x" type="image/avif" />
+          <source srcset="/brand/wordmark-swoosh-128.webp 1x, /brand/wordmark-swoosh-256.webp 2x" type="image/webp" />
+          <img src="/brand/wordmark-swoosh-128.png" width="73" height="35" alt="" class="h-[35px] w-[73px]" />
+        </picture>
+      </a>
+
+      <nav aria-label={d.a11y.primaryNav} class="hidden lg:block">
+        <ul class="flex items-center gap-1">
+          {links.map((l) => (
+            <li><a href={l.href} class="rounded-full px-3.5 py-2.5 text-[0.95rem] text-muted transition-colors duration-300 hover:bg-white/5 hover:text-white">{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <LangSwitcher locale={locale} class="hidden md:block" />
+        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary hidden min-h-11 px-4 sm:inline-flex" data-magnetic>
+          <Icon name="whatsapp" size={18} />
+          <span>{d.nav.whatsapp}</span>
+          <span class="sr-only">{d.a11y.newTab}</span>
+        </a>
+        <button
+          type="button"
+          class="grid size-11 place-items-center rounded-full border border-white/12 text-white transition-colors hover:bg-white/5 lg:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-menu-toggle
+          data-label-open={d.a11y.menuOpen}
+          data-label-close={d.a11y.menuClose}
+        >
+          <span class="sr-only" data-menu-label>{d.a11y.menuOpen}</span>
+          <Icon name="menu" size={22} class="menu-icon-open" />
+          <Icon name="close" size={22} class="menu-icon-close hidden" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu lg:hidden" hidden>
+    <div class="fixed inset-0 -z-10 bg-navy-950/70 backdrop-blur-sm" data-menu-backdrop></div>
+    <div class="shell mt-2 rounded-[1.75rem] border border-white/12 bg-navy-900/95 p-3 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7)]">
+      <nav aria-label={d.a11y.primaryNav}>
+        <ul class="flex flex-col">
+          {links.map((l, i) => (
+            <li>
+              <a href={l.href} data-menu-link class="flex min-h-14 items-center justify-between rounded-2xl px-4 text-lg transition-colors hover:bg-white/5">
+                <span>{l.label}</span>
+                <span class="font-mono text-xs text-muted" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-1 pt-3">
+        <LangSwitcher locale={locale} />
+        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary min-h-11 px-4">
+          <Icon name="whatsapp" size={18} />
+          <span>{d.nav.whatsapp}</span>
+          <span class="sr-only">{d.a11y.newTab}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  import { getLenis } from '../scripts/motion';
+
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    const label = toggle.querySelector('[data-menu-label]')!;
+    const setOpen = (open: boolean, focusBack = true) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
+      toggle.querySelector('.menu-icon-open')!.classList.toggle('hidden', open);
+      toggle.querySelector('.menu-icon-close')!.classList.toggle('hidden', !open);
+      document.documentElement.classList.toggle('menu-open', open);
+      open ? getLenis()?.stop() : getLenis()?.start();
+      if (open) menu.querySelector<HTMLElement>('a')?.focus();
+      else if (focusBack) toggle.focus();
+    };
+    toggle.addEventListener('click', () => setOpen(menu.hidden));
+    menu.querySelector('[data-menu-backdrop]')?.addEventListener('click', () => setOpen(false));
+    menu.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => setOpen(false, false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) setOpen(false);
+      // Keep Tab focus inside the open menu (toggle button included)
+      if (e.key === 'Tab' && !menu.hidden) {
+        const items = [toggle, ...menu.querySelectorAll<HTMLElement>('a, button')];
+        const first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (m) => m.matches && setOpen(false, false));
+  }
+</script>

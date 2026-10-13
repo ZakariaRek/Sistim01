@@ -45,10 +45,14 @@ function Circuit({ g, completed, finished, className }: { g: Geometry; completed
       <g stroke="#fff" strokeOpacity="0.2" strokeWidth="1.6" fill="#2C3548">
         {g.extraNodes.map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="6" />)}
       </g>
-      {/* the lit route: one segment per completed step */}
-      <g stroke="#3CCB98" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 5px rgb(22 171 121 / 0.7))' }}>
+      {/* the lit route: one segment per completed step. The glow is a wider, fainter stroke underneath
+          (no SVG filter: filters on a large group are costly under an animating canvas) */}
+      <g stroke="#3CCB98" strokeLinecap="round" strokeLinejoin="round">
         {g.segs.map((d, i) => (
-          <path key={d} d={d} pathLength={1} className="cx-seg" style={{ strokeDashoffset: i < completed ? 0 : 1, transitionDelay: '0s' }} />
+          <path key={`glow-${d}`} d={d} pathLength={1} className="cx-seg" strokeWidth="9" strokeOpacity="0.2" style={{ strokeDashoffset: i < completed ? 0 : 1 }} />
+        ))}
+        {g.segs.map((d, i) => (
+          <path key={d} d={d} pathLength={1} className="cx-seg" strokeWidth="2.6" style={{ strokeDashoffset: i < completed ? 0 : 1 }} />
         ))}
       </g>
       {/* nodes */}

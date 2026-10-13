@@ -88,9 +88,9 @@ function glowTexture() {
   return t;
 }
 
-export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): LogoController {
+export async function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): Promise<LogoController> {
   let lowQuality = opts.lowPower;
-  const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+  const renderer = new WebGLRenderer({ canvas, antialias: !lowQuality, alpha: true, powerPreference: 'low-power' });
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;
@@ -235,6 +235,8 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
   let lastFrameAt = 0;
   const frame = (_t: number, dtMs: number) => {
     const now = performance.now();
+    // light mode caps rendering at ~30 fps: halves the main-thread cost on weak or software GPUs
+    if (lowQuality && lastFrameAt && now - lastFrameAt < 30 && !first) return;
     const real = lastFrameAt ? now - lastFrameAt : 0;
     lastFrameAt = now;
     const dt = Math.min(dtMs, 50) / 1000;
@@ -301,8 +303,6 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
   const onLost = (e: Event) => { e.preventDefault(); contextLost = true; apply(); opts.onContextLost(); };
   canvas.addEventListener('webglcontextlost', onLost);
 
-  apply();
-
   const api: LogoController = {
     spin(direction, turns = C.STEP_SPIN_TURNS) {
       if (busy || frozen !== null) return; // coalesce: never stack spins
@@ -356,5 +356,9 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
       renderer.forceContextLoss();
     },
   };
+  // Compile shaders without blocking the main thread (KHR_parallel_shader_compile), then start rendering.
+  // A software GPU can otherwise stall the page for seconds on the first frame.
+  try { await renderer.compileAsync(scene, camera); } catch { /* the first render compiles synchronously instead */ }
+  apply();
   return api;
 }

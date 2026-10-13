@@ -37,16 +37,19 @@ const sampleSpin = (page, ms) => page.evaluate((ms) => new Promise((res) => {
   const f = () => { const t = performance.now() - t0; out.push([t, hook.info().spin]); if (t < ms) requestAnimationFrame(f); else res(out); };
   requestAnimationFrame(f);
 }), ms);
+const wrap = (d) => ((d + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; // the angle is normalised at the end of a spin
+/** Total turns and the peak speed over sliding 250 ms windows (single-frame deltas are too jittery in software GL). */
 const speed = (samples) => {
-  let peak = 0, total = 0, min = 0;
-  for (let k = 1; k < samples.length; k++) {
-    let d = samples[k][1] - samples[k - 1][1];
-    const dt = (samples[k][0] - samples[k - 1][0]) / 1000;
-    d = ((d + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; // wrap to (-pi, pi]: the angle is normalised at the end of a spin
-    total += Math.abs(d);
-    if (dt > 0.008) peak = Math.max(peak, Math.abs(d) / (Math.PI * 2) / dt);
+  const cum = [0];
+  for (let k = 1; k < samples.length; k++) cum.push(cum[k - 1] + wrap(samples[k][1] - samples[k - 1][1]));
+  let peak = 0;
+  for (let a = 0; a < samples.length; a++) {
+    let b = a;
+    while (b < samples.length && samples[b][0] - samples[a][0] < 250) b++;
+    if (b >= samples.length) break;
+    peak = Math.max(peak, Math.abs(cum[b] - cum[a]) / (Math.PI * 2) / ((samples[b][0] - samples[a][0]) / 1000));
   }
-  return { turns: total / (Math.PI * 2), peak };
+  return { turns: Math.abs(cum[cum.length - 1]) / (Math.PI * 2), peak };
 };
 const ready = (page, ms = 20000) => page.waitForFunction(() => document.querySelector('.logo3d')?.dataset.ready === 'true', null, { timeout: ms });
 const info = (page) => page.evaluate(() => document.querySelector('canvas.logo3d-canvas')?.__logo?.info());

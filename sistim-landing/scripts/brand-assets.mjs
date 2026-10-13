@@ -86,6 +86,17 @@ const markDisc = await sharp(disc).composite([{ input: glyphScaled, ...pos }]).p
 const markSquare = await sharp(square).composite([{ input: glyphScaled, ...pos }]).png().toBuffer();
 await save(sharp(markDisc), 'mark', [96]);
 
+// Film grain tile for the consultation panel: pre-rendered (deterministic) instead of an SVG filter,
+// which some renderers rasterise in patches under an animating canvas.
+{
+  const N = 160;
+  const px = Buffer.alloc(N * N * 4);
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < N * N; i++) { px[i * 4] = px[i * 4 + 1] = px[i * 4 + 2] = 255; px[i * 4 + 3] = Math.round(rnd() * rnd() * 255); }
+  await sharp(px, { raw: { width: N, height: N, channels: 4 } }).png({ compressionLevel: 9 }).toFile(out('grain.png'));
+}
+
 // Optional thank-you photo (only used when SHOW_THANKYOU_PHOTO is true in src/config/consultation.ts)
 if (existsSync(SRC('thankyou.jpg'))) {
   await sharp(SRC('thankyou.jpg')).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 80 }).toFile(out('brand/thankyou.webp'));

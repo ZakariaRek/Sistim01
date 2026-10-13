@@ -3,7 +3,7 @@
 import {
   ACESFilmicToneMapping, AdditiveBlending, Box3, CanvasTexture, DirectionalLight, ExtrudeGeometry, Group, Mesh,
   MeshPhysicalMaterial, MeshStandardMaterial, PerspectiveCamera, PMREMGenerator, Scene, ShapeUtils, SRGBColorSpace,
-  Sprite, SpriteMaterial, WebGLRenderer, type Shape,
+  Shape, Sprite, SpriteMaterial, WebGLRenderer, type Vector2,
 } from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -50,6 +50,29 @@ function strokeWidth(shapes: Shape[]) {
   return (2 * area) / perimeter;
 }
 
+/**
+ * Potrace emits many tiny curve segments. Extruding them directly makes ExtrudeGeometry's bevel maths
+ * blow up on near-duplicate points (the cap triangulates wrongly). Resample every outline to a clean
+ * polygon with a minimum vertex spacing first.
+ */
+function cleanShapes(shapes: Shape[], minDist: number): Shape[] {
+  const tidy = (pts: Vector2[]) => {
+    const out: Vector2[] = [];
+    for (const p of pts) {
+      const last = out[out.length - 1];
+      if (!last || Math.hypot(p.x - last.x, p.y - last.y) >= minDist) out.push(p);
+    }
+    while (out.length > 2 && Math.hypot(out[0].x - out[out.length - 1].x, out[0].y - out[out.length - 1].y) < minDist) out.pop();
+    return out;
+  };
+  return shapes.map((sh) => {
+    const { shape, holes } = sh.extractPoints(10);
+    const clean = new Shape(tidy(shape));
+    clean.holes = holes.map((h) => new Shape(tidy(h)));
+    return clean;
+  });
+}
+
 function glowTexture() {
   const c = document.createElement('canvas');
   c.width = c.height = 128;
@@ -93,11 +116,13 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
   // --- geometry from the traced SVG
   const data = new SVGLoader().parse(logoSvg);
   const find = (id: string) => data.paths.find((p) => (p.userData?.node as Element | undefined)?.id === id)!;
-  const letterShapes = SVGLoader.createShapes(find('letter'));
-  const dotShapes = SVGLoader.createShapes(find('dot'));
+  const rawLetter = find('letter').toShapes();
+  const rawDot = find('dot').toShapes();
 
-  const stroke = strokeWidth(letterShapes);
-  const dotRadius = strokeWidth(dotShapes); // a disc: 2A/P = r
+  const stroke = strokeWidth(rawLetter);
+  const dotRadius = strokeWidth(rawDot); // a disc: 2A/P = r
+  const letterShapes = cleanShapes(rawLetter, stroke * 0.03);
+  const dotShapes = cleanShapes(rawDot, stroke * 0.03);
   const bevelSegments = lowQuality ? 3 : 8;
   const curveSegments = lowQuality ? 2 : 4;
   const depth = stroke * 0.35;
@@ -120,7 +145,8 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
   const dotCx = (db.min.x + db.max.x) / 2, dotCy = (db.min.y + db.max.y) / 2, dotW = db.max.x - db.min.x;
 
   const letterMat = new MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0, clearcoat: lowQuality ? 0 : 0.6, clearcoatRoughness: 0.12, envMapIntensity: 0.95 });
-  const dotMat = new MeshStandardMaterial({ color: EMERALD, roughness: 0.35, metalness: 0, emissive: EMERALD, emissiveIntensity: 0.6 });
+  const dotMat = new MeshStandardMaterial({ color: 0x0c7f55, roughness: 0.4, metalness: 0, emissive: EMERALD, emissiveIntensity: 0.32, envMapIntensity: 0.3 });
+  dotMat.toneMapped = false; // ACES would wash the emerald out to mint; keep the brand colour true
 
   const logo = new Group();
   logo.rotation.x = Math.PI; // SVG is y-down: a proper rotation (not a mirror), so the letter keeps its true shape
@@ -217,7 +243,7 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
       root.scale.setScalar(state.pulse);
     }
     const slow = Math.sin(tSec * 1.3);
-    dotMat.emissiveIntensity = 0.6 + state.dot * 0.9 + slow * 0.06;
+    dotMat.emissiveIntensity = 0.32 + state.dot * 0.9 + slow * 0.04;
     glowMat.opacity = 0.34 + slow * 0.08 + state.dot * 0.4;
     glow.scale.setScalar(glowBase * (1 + slow * 0.06 + state.dot * 0.25));
 

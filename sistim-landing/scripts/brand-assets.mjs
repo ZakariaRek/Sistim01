@@ -86,9 +86,6 @@ const markDisc = await sharp(disc).composite([{ input: glyphScaled, ...pos }]).p
 const markSquare = await sharp(square).composite([{ input: glyphScaled, ...pos }]).png().toBuffer();
 await save(sharp(markDisc), 'mark', [96]);
 
-// Large "س" for the consultation page panel: the glyph alone on transparent, used at very low contrast
-await save(sharp(glyph), 'glyph', [900], ['png', 'webp']);
-
 // Optional thank-you photo (only used when SHOW_THANKYOU_PHOTO is true in src/config/consultation.ts)
 if (existsSync(SRC('thankyou.jpg'))) {
   await sharp(SRC('thankyou.jpg')).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 80 }).toFile(out('brand/thankyou.webp'));

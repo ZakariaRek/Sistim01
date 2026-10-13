@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type Keyb
 import { gsap } from 'gsap';
 import { NEED_IDS, OPTIONAL_STEPS, STEP_IDS, TYPE_IDS, normalizePhone, type NeedId, type TypeId } from '../../config/brief';
 import ConsultPanel from './ConsultPanel';
+import { consultState } from '../../lib/logo3d/store';
+import { TYPE_ICON } from '../consultation/typeIcons';
 
 type Dict = Record<string, any>;
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
   newTab: string;
   waIcon: string;
   photoSrc?: string;
+  logo?: ReactNode; // the 3D logo island (named slot "logo")
   children?: ReactNode; // header (logo, language switcher, close) rendered by the Astro page
 }
 interface Answers {
@@ -44,17 +47,9 @@ const store = {
   clear() { try { localStorage.removeItem(STORE_KEY); } catch {} },
 };
 
-const TYPE_ICON: Record<TypeId, string> = {
-  health: 'M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.5c0 5.6-7.5 10.2-7.5 10.2z',
-  shop: 'M5 8h14l-1.2 12H6.2z M9 8V6a3 3 0 0 1 6 0v2',
-  architect: 'M3.5 20.5L12 4l8.5 16.5 M7.5 14h9',
-  finance: 'M5 20v-7 M12 20V5 M19 20v-9 M3 20h18',
-  freelancer: 'M5 6h14v9H5z M3 19h18',
-  other: 'M12 3v6 M12 15v6 M3 12h6 M15 12h6',
-};
 const ARROW = 'M5 12h14M13 6l6 6-6 6';
 
-export default function ConsultFlow({ locale, s, copy, cfg, wa, eml, handle, homeHref, newTab, waIcon, photoSrc, children }: Props) {
+export default function ConsultFlow({ locale, s, copy, cfg, wa, eml, handle, homeHref, newTab, waIcon, photoSrc, logo, children }: Props) {
   const rtl = locale === 'ar';
   const [answers, setAnswers] = useState<Answers>({});
   const [step, setStep] = useState(0);
@@ -153,6 +148,11 @@ export default function ConsultFlow({ locale, s, copy, cfg, wa, eml, handle, hom
   };
 
   const go = (to: number, dir: 1 | -1) => { direction.current = dir; setErrors({}); setStep(to); };
+
+  // tell the 3D logo what the form is doing (it reads, never writes)
+  useEffect(() => {
+    consultState.set({ step, direction: direction.current as 1 | -1, businessType: answers.type ?? null, status: phase });
+  }, [step, phase, answers.type]);
 
   const next = (a: Answers = answers) => {
     clearTimeout(advanceTimer.current);
@@ -428,12 +428,11 @@ export default function ConsultFlow({ locale, s, copy, cfg, wa, eml, handle, hom
       <ConsultPanel
         completed={completed}
         finished={phase === 'thanks'}
-        type={answers.type ?? null}
         reassurance={reassurance}
         handle={handle}
-        badgeSrc="/brand/mark.png"
         photo={photoSrc ? { src: photoSrc, label: s.thanks.photoLabel } : null}
         reduced={reduced}
+        logo={logo}
       />
 
       <main id="main" tabIndex={-1} className="consult-area-form outline-none">

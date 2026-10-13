@@ -8,6 +8,7 @@ import Base from '../../layouts/Base.astro';
 import LangSwitcher from '../../components/LangSwitcher.astro';
 import Icon from '../../components/Icon.astro';
 import ConsultFlow from '../../components/islands/ConsultFlow';
+import Logo3D from '../../components/consultation/Logo3D';
 import { LOCALES, localePath, t, type Locale } from '../../i18n';
 import { consultCopy } from '../../i18n/consult';
 import { CONTACT, encodedEmail } from '../../config/contact';
@@ -37,6 +38,8 @@ const photoSrc = SHOW_THANKYOU_PHOTO && existsSync(join(process.cwd(), 'public/b
     waIcon={siWhatsapp.path}
     photoSrc={photoSrc}
   >
+    <!-- Hydrates after the form (client:idle vs client:load); Three.js is a lazy chunk inside it -->
+    <Logo3D slot="logo" client:idle types={d.brief.types} />
     <header class="consult-header">
       <a href={home} class="flex items-center gap-2.5 rounded-full" aria-label={d.a11y.home}>
         <picture>

@@ -5,18 +5,21 @@ import Hero from './Hero.astro';
 import Marquee from './Marquee.astro';
 import Services from './Services.astro';
 import Offers from './Offers.astro';
+import ConsultBand from './ConsultBand.astro';
 import Process from './Process.astro';
 import Why from './Why.astro';
 import Work from './Work.astro';
 import Contact from './Contact.astro';
 import Footer from './Footer.astro';
-import FloatingWhatsApp from './FloatingWhatsApp.astro';
+import MobileBar from './MobileBar.astro';
 import CircuitDivider from './CircuitDivider.astro';
 import type { Locale } from '../i18n';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 ---
-<Base locale={locale}>
+<Base locale={locale} motion>
+  <div class="scroll-progress fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-emerald-400 rtl:origin-right" style="transform:scaleX(0)" aria-hidden="true"></div>
+  <div class="progressive-blur" aria-hidden="true"><div></div><div></div><div></div></div>
   <Nav locale={locale} />
   <main id="main" tabindex="-1" class="outline-none">
     <Hero locale={locale} />
@@ -24,7 +27,7 @@ const { locale } = Astro.props;
     <Services locale={locale} />
     <CircuitDivider variant={1} />
     <Offers locale={locale} />
-    <CircuitDivider variant={2} />
+    <ConsultBand locale={locale} />
     <Process locale={locale} />
     <CircuitDivider variant={1} />
     <Why locale={locale} />
@@ -33,5 +36,9 @@ const { locale } = Astro.props;
     <Contact locale={locale} />
   </main>
   <Footer locale={locale} />
-  <FloatingWhatsApp locale={locale} />
+  <MobileBar locale={locale} />
 </Base>
+
+<script>
+  import '../scripts/boot';
+</script>

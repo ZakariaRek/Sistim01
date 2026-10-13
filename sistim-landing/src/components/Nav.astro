@@ -1,5 +1,5 @@
 ---
-import { t, LOCALE_META, type Locale } from '../i18n';
+import { t, localePath, type Locale } from '../i18n';
 import { whatsappHref } from '../config/contact';
 import Icon from './Icon.astro';
 import LangSwitcher from './LangSwitcher.astro';
@@ -19,7 +19,7 @@ const links = [
 <header class="fixed inset-x-0 top-0 z-50 pt-[max(env(safe-area-inset-top),0.75rem)]">
   <div class="shell">
     <div class="glass flex h-16 items-center justify-between gap-3 rounded-full ps-2.5 pe-2 shadow-[0_10px_40px_-20px_rgb(0_0_0/0.6)]">
-      <a href={LOCALE_META[locale].path} class="flex shrink-0 items-center gap-2.5 rounded-full" aria-label={d.a11y.home}>
+      <a href={localePath(locale)} class="flex shrink-0 items-center gap-2.5 rounded-full" aria-label={d.a11y.home}>
         <picture>
           <source srcset="/brand/mark.avif" type="image/avif" />
           <source srcset="/brand/mark.webp" type="image/webp" />
@@ -32,24 +32,26 @@ const links = [
         </picture>
       </a>
 
-      <nav aria-label={d.a11y.primaryNav} class="hidden lg:block">
+      <nav aria-label={d.a11y.primaryNav} class="hidden xl:block">
         <ul class="flex items-center gap-1">
           {links.map((l) => (
-            <li><a href={l.href} class="rounded-full px-3.5 py-2.5 text-[0.95rem] text-muted transition-colors duration-300 hover:bg-white/5 hover:text-white">{l.label}</a></li>
+            <li><a href={l.href} class="whitespace-nowrap rounded-full px-3 py-2.5 text-[0.95rem] text-muted transition-colors duration-300 hover:bg-white/5 hover:text-white">{l.label}</a></li>
           ))}
         </ul>
       </nav>
 
       <div class="flex items-center gap-2">
         <LangSwitcher locale={locale} class="hidden md:block" />
-        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary hidden min-h-11 px-4 sm:inline-flex" data-magnetic>
-          <Icon name="whatsapp" size={18} />
-          <span>{d.nav.whatsapp}</span>
-          <span class="sr-only">{d.a11y.newTab}</span>
+        <a href={whatsappHref()} target="_blank" rel="noopener" class="hidden size-11 place-items-center rounded-full border border-white/12 text-emerald-400 transition-colors hover:bg-white/5 xl:grid">
+          <Icon name="whatsapp" size={20} />
+          <span class="sr-only">{d.nav.whatsapp} {d.a11y.newTab}</span>
+        </a>
+        <a href={localePath(locale, 'consultation')} class="btn btn-primary hidden min-h-11 px-4 sm:inline-flex" data-magnetic>
+          <span>{d.consult.cta}</span>
         </a>
         <button
           type="button"
-          class="grid size-11 place-items-center rounded-full border border-white/12 text-white transition-colors hover:bg-white/5 lg:hidden"
+          class="grid size-11 place-items-center rounded-full border border-white/12 text-white transition-colors hover:bg-white/5 xl:hidden"
           aria-expanded="false"
           aria-controls="mobile-menu"
           data-menu-toggle
@@ -64,7 +66,7 @@ const links = [
     </div>
   </div>
 
-  <div id="mobile-menu" class="mobile-menu lg:hidden" hidden>
+  <div id="mobile-menu" class="mobile-menu xl:hidden" hidden>
     <div class="fixed inset-0 -z-10 bg-navy-950/70 backdrop-blur-sm" data-menu-backdrop></div>
     <div class="shell mt-2 rounded-[1.75rem] border border-white/12 bg-navy-900/95 p-3 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7)]">
       <nav aria-label={d.a11y.primaryNav}>
@@ -79,9 +81,13 @@ const links = [
           ))}
         </ul>
       </nav>
-      <div class="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-1 pt-3">
+      <a href={localePath(locale, 'consultation')} class="btn btn-primary mt-2 w-full min-h-13">
+        <span>{d.consult.cta}</span>
+        <Icon name="arrow" size={18} class="arrow" />
+      </a>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-1 pt-3">
         <LangSwitcher locale={locale} />
-        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary min-h-11 px-4">
+        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-ghost min-h-11 px-4">
           <Icon name="whatsapp" size={18} />
           <span>{d.nav.whatsapp}</span>
           <span class="sr-only">{d.a11y.newTab}</span>
@@ -122,6 +128,6 @@ const links = [
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     });
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', (m) => m.matches && setOpen(false, false));
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (m) => m.matches && setOpen(false, false));
   }
 </script>

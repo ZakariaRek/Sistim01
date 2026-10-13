@@ -1,6 +1,5 @@
 ---
-import { t, type Locale } from '../i18n';
-import { whatsappHref } from '../config/contact';
+import { t, localePath, type Locale } from '../i18n';
 import Icon from './Icon.astro';
 import SplitWords from './SplitWords.astro';
 import CircuitField from './CircuitField.astro';
@@ -25,17 +24,12 @@ const d = t(locale);
 
   <div class="shell grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
     <div class="lg:col-span-7">
-      <p class="hero-fade mb-6 flex items-center gap-3" style="--d:0.1s">
-        <span class="node"></span>
-        <span class="label">{d.hero.kicker}</span>
-      </p>
       <SplitWords as="h1" id="hero-title" mode="hero" text={d.hero.title} class="text-hero font-semibold tracking-[-0.025em] text-white" />
       <p class="hero-fade mt-6 max-w-[38rem] text-lead text-muted" style="--d:0.75s">{d.hero.sub}</p>
       <div class="hero-fade mt-9 flex flex-wrap items-center gap-3" style="--d:0.95s">
-        <a href={whatsappHref()} target="_blank" rel="noopener" class="btn btn-primary min-h-13 px-6 text-[1.05rem]" data-magnetic>
-          <Icon name="whatsapp" size={20} />
-          <span>{d.hero.ctaPrimary}</span>
-          <span class="sr-only">{d.a11y.newTab}</span>
+        <a href={localePath(locale, 'consultation')} class="btn btn-primary min-h-13 px-6 text-[1.05rem]" data-magnetic>
+          <span>{d.consult.cta}</span>
+          <Icon name="arrow" size={18} class="arrow" />
         </a>
         <a href="#offers" class="btn btn-ghost min-h-13 px-6 text-[1.05rem]">
           <span>{d.hero.ctaSecondary}</span>

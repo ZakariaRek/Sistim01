@@ -1,5 +1,5 @@
 ---
-import { t, LOCALES, LOCALE_META, type Locale } from '../i18n';
+import { t, LOCALES, LOCALE_META, localePath, type Locale } from '../i18n';
 import { CONTACT, whatsappHref, telHref, encodedEmail } from '../config/contact';
 import { BRAND_NAME } from '../config/site';
 import Icon from './Icon.astro';
@@ -26,6 +26,10 @@ const year = new Date().getFullYear();
         </picture>
       </div>
       <p class="mt-6 max-w-sm text-muted">{d.footer.line}</p>
+      <a href={localePath(locale, 'consultation')} class="btn btn-primary mt-6 min-h-11 px-5">
+        <span>{d.consult.cta}</span>
+        <Icon name="arrow" size={18} class="arrow" />
+      </a>
     </div>
 
     <div class="md:col-span-3">
@@ -55,6 +59,5 @@ const year = new Date().getFullYear();
   </div>
   <div class="shell mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-6 text-sm text-muted">
     <p>© <span class="ltr">{year}</span> {BRAND_NAME}. {d.footer.rights}</p>
-    <p class="flex items-center gap-2"><span class="node scale-75" aria-hidden="true"></span>{d.footer.location}</p>
   </div>
 </footer>

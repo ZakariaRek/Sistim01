@@ -1,0 +1,28 @@
+---
+// Full-width emerald band placed directly after the Offers section.
+import { localePath, type Locale } from '../i18n';
+import { consultCopy } from '../i18n/consult';
+import Icon from './Icon.astro';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const c = consultCopy(locale);
+---
+<section class="consult-band relative overflow-hidden bg-emerald-500 text-navy-950" aria-labelledby="band-title">
+  <svg class="pointer-events-none absolute inset-0 h-full w-full rtl:-scale-x-100" viewBox="0 0 1200 200" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path d="M0 14 H380 L396 6 H520" stroke="#171D29" stroke-opacity="0.35" stroke-width="1.2" vector-effect="non-scaling-stroke" />
+    <path d="M680 194 H840 L856 186 H1200" stroke="#171D29" stroke-opacity="0.35" stroke-width="1.2" vector-effect="non-scaling-stroke" />
+  </svg>
+  <div class="shell relative flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between md:py-14" data-reveal="item">
+    <h2 id="band-title" class="max-w-2xl text-[clamp(1.5rem,1.1rem+1.6vw,2.4rem)] font-semibold leading-tight">{c.band}</h2>
+    <a href={localePath(locale, 'consultation')} class="btn band-btn min-h-13 shrink-0 px-7 text-[1.05rem]" data-magnetic>
+      <span>{c.cta}</span>
+      <Icon name="arrow" size={18} class="arrow" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .band-btn { background: var(--color-navy-950); color: var(--color-white); box-shadow: 0 12px 30px -12px rgb(23 29 41 / 0.7); }
+  .band-btn:hover { background: var(--color-navy-800); }
+  .consult-band :focus-visible { outline-color: var(--color-navy-950); }
+</style>

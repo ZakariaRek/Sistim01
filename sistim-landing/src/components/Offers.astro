@@ -1,13 +1,14 @@
 ---
-import { t, type Locale } from '../i18n';
+import { t, localePath, type Locale } from '../i18n';
 import { SHOW_PRICES, PRICES } from '../config/site';
 import SectionHeader from './SectionHeader.astro';
 import Icon from './Icon.astro';
 interface Props { locale: Locale }
 const d = t(Astro.props.locale);
 const fmt = (n: number) => new Intl.NumberFormat('fr-FR').format(n); // "7 500"
-// Offer -> index of the matching "need" option in the contact form
-const needFor: Record<string, number> = { starter: 0, business: 2, saas: 3 };
+// Offer -> need preselected in the brief (Business can be booking or store, so it stays open)
+const needFor: Record<string, string> = { starter: 'portfolio', saas: 'saas' };
+const brief = localePath(Astro.props.locale, 'consultation');
 ---
 <section id="offers" class="relative py-20 md:py-28" aria-labelledby="offers-title">
   <div class="shell">
@@ -51,7 +52,7 @@ const needFor: Record<string, number> = { starter: 0, business: 2, saas: 3 };
               <span class="text-muted">{d.offers.timelineLabel}</span>
               <span class="font-medium text-mist">{o.timeline}</span>
             </p>
-            <a href="#contact" data-need={needFor[o.id]} class:list={['btn mt-6 w-full', featured ? 'btn-primary' : 'btn-ghost']}>
+            <a href={needFor[o.id] ? `${brief}?need=${needFor[o.id]}` : brief} class:list={['btn mt-6 w-full', featured ? 'btn-primary' : 'btn-ghost']}>
               <span>{d.offers.quote}</span>
               <Icon name="arrow" size={18} class="arrow" />
             </a>

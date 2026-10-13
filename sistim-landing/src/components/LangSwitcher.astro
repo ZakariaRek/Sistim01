@@ -1,14 +1,14 @@
 ---
-import { LOCALES, LOCALE_META, t, type Locale } from '../i18n';
-interface Props { locale: Locale; class?: string; id?: string }
-const { locale, class: cls = '', id } = Astro.props;
+import { LOCALES, LOCALE_META, localePath, t, type Locale } from '../i18n';
+interface Props { locale: Locale; class?: string; id?: string; page?: string }
+const { locale, class: cls = '', id, page = '' } = Astro.props;
 ---
 <nav aria-label={t(locale).a11y.langSwitcher} class={cls} id={id}>
   <ul class="flex items-center gap-0.5 rounded-full border border-white/10 bg-navy-950/50 p-1" dir="ltr">
     {LOCALES.map((l) => (
       <li>
         <a
-          href={LOCALE_META[l].path}
+          href={localePath(l, page)}
           hreflang={LOCALE_META[l].lang}
           lang={LOCALE_META[l].lang}
           data-lang-link={l}

@@ -1,12 +1,14 @@
 ---
-import { siWhatsapp } from 'simple-icons';
-import { t, type Locale } from '../i18n';
+// Final section: one large free-consultation CTA, with direct contact links below it.
+import { t, localePath, type Locale } from '../i18n';
+import { consultCopy } from '../i18n/consult';
 import { CONTACT, telHref, whatsappHref, encodedEmail } from '../config/contact';
-import SectionHeader from './SectionHeader.astro';
+import SplitWords from './SplitWords.astro';
 import Icon from './Icon.astro';
-import ContactForm from './islands/ContactForm';
 interface Props { locale: Locale }
-const d = t(Astro.props.locale);
+const { locale } = Astro.props;
+const d = t(locale);
+const c = consultCopy(locale);
 const eml = encodedEmail();
 const rows = [
   { href: whatsappHref(), label: d.contact.direct.whatsapp, value: CONTACT.phoneDisplay, icon: 'whatsapp', external: true },
@@ -17,41 +19,65 @@ const rows = [
 ---
 <section id="contact" class="relative py-20 md:py-28" aria-labelledby="contact-title">
   <div class="shell">
-    <SectionHeader id="contact-title" num="06" kicker={d.contact.kicker} title={d.contact.title} intro={d.contact.intro} />
-    <div class="mt-14 grid gap-6 lg:grid-cols-12">
-      <div class="glass rounded-[1.75rem] p-6 md:p-9 lg:col-span-7" data-reveal="item">
-        <ContactForm client:visible s={d.contact.form} wa={CONTACT.whatsappNumber} eml={eml} newTab={d.a11y.newTab} waIcon={siWhatsapp.path} />
-      </div>
-      <div class="lg:col-span-5" data-reveal="item">
-        <h3 class="label mb-4">{d.contact.direct.title}</h3>
-        <ul class="divide-y divide-white/8 overflow-hidden rounded-[1.75rem] border border-white/10 bg-navy-950/40">
-          {rows.map((r) => (
-            <li>
-              <a href={r.href} data-eml={'eml' in r ? r.eml : undefined} target={r.external ? '_blank' : undefined} rel={r.external ? 'noopener' : undefined} class="contact-row">
-                <span class="contact-icon"><Icon name={r.icon} size={20} /></span>
-                <span class="min-w-0 flex-1">
-                  <span class="block text-sm text-muted">{r.label}</span>
-                  <span class="ltr block truncate text-lg text-white" data-eml-text={'eml' in r ? '' : undefined}>{r.value}</span>
-                </span>
-                <Icon name="arrow" size={18} class="arrow shrink-0 text-muted" />
-                {r.external && <span class="sr-only">{d.a11y.newTab}</span>}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div class="cta-card relative overflow-hidden rounded-[2rem] px-6 py-12 md:px-14 md:py-16" data-reveal="item">
+      <svg class="pointer-events-none absolute end-0 top-0 hidden h-full w-[30%] opacity-60 lg:block rtl:-scale-x-100" viewBox="0 0 360 400" preserveAspectRatio="xMaxYMid meet" fill="none" aria-hidden="true">
+        <path d="M360 80 H240 L200 120 H90 M360 300 H260 L220 260 H150" stroke="#16AB79" stroke-opacity="0.45" stroke-width="1.5" />
+        <circle cx="84" cy="120" r="6" stroke="#16AB79" stroke-width="1.5" /><circle cx="150" cy="260" r="5" fill="#16AB79" class="pulse-svg" /><circle cx="150" cy="260" r="5" fill="#16AB79" />
+      </svg>
+      <p class="relative mb-5 flex items-center gap-3">
+        <span class="node" aria-hidden="true"></span>
+        <span class="label">{c.cta}</span>
+      </p>
+      <SplitWords id="contact-title" as="h2" text={c.title} class="relative max-w-3xl text-display font-semibold tracking-[-0.02em] text-white" />
+      <p class="relative mt-5 max-w-2xl text-lead text-muted">{c.lead}</p>
+      <ul class="relative mt-8 flex flex-wrap gap-2">
+        {c.facts.map((f) => <li class="tag min-h-9 px-3.5 text-sm">{f}</li>)}
+      </ul>
+      <a href={localePath(locale, 'consultation')} class="btn btn-primary relative mt-10 min-h-14 px-8 text-lg" data-magnetic>
+        <span>{c.cta}</span>
+        <Icon name="arrow" size={20} class="arrow" />
+      </a>
+    </div>
+
+    <div class="mt-12" data-reveal="item">
+      <h3 class="label mb-4">{d.consult.directTitle}</h3>
+      <ul class="grid overflow-hidden rounded-[1.75rem] border border-white/10 bg-navy-950/40 sm:grid-cols-2 lg:grid-cols-4">
+        {rows.map((r) => (
+          <li class="direct-cell">
+            <a href={r.href} data-eml={'eml' in r ? r.eml : undefined} target={r.external ? '_blank' : undefined} rel={r.external ? 'noopener' : undefined} class="contact-row">
+              <span class="contact-icon"><Icon name={r.icon} size={20} /></span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm text-muted">{r.label}</span>
+                <span class="ltr block truncate text-white" data-eml-text={'eml' in r ? '' : undefined}>{r.value}</span>
+              </span>
+              {r.external && <span class="sr-only">{d.a11y.newTab}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   </div>
 </section>
 
 <style>
-  .contact-row { display: flex; align-items: center; gap: 1rem; min-height: 4.75rem; padding: 0.9rem 1.25rem; transition: background-color var(--duration-fast) var(--ease-out-expo); }
+  .cta-card {
+    background: radial-gradient(700px 400px at 85% 0%, rgb(22 171 121 / 0.18), transparent 60%), linear-gradient(180deg, var(--color-navy-800), var(--color-navy-900)) padding-box,
+      linear-gradient(160deg, rgb(60 203 152 / 0.7), rgb(22 171 121 / 0.15) 45%, rgb(255 255 255 / 0.06)) border-box;
+    border: 1px solid transparent;
+  }
+  :global([dir='rtl']) .cta-card { background: radial-gradient(700px 400px at 15% 0%, rgb(22 171 121 / 0.18), transparent 60%), linear-gradient(180deg, var(--color-navy-800), var(--color-navy-900)) padding-box, linear-gradient(200deg, rgb(60 203 152 / 0.7), rgb(22 171 121 / 0.15) 45%, rgb(255 255 255 / 0.06)) border-box; }
+  .contact-row { display: flex; align-items: center; gap: 0.9rem; min-height: 4.75rem; height: 100%; padding: 0.9rem 1.25rem; transition: background-color var(--duration-fast) var(--ease-out-expo); }
   .contact-row:hover { background: rgb(22 171 121 / 0.07); }
   .contact-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: 0.8rem; color: var(--color-emerald-400); background: rgb(22 171 121 / 0.1); border: 1px solid rgb(22 171 121 / 0.25); }
-  .contact-row :global(.arrow) { transition: transform var(--duration-fast) var(--ease-out-expo); }
-  .contact-row:hover :global(.arrow) { transform: translateX(4px); }
-  :global([dir='rtl']) .contact-row :global(.arrow) { transform: scaleX(-1); }
-  :global([dir='rtl']) .contact-row:hover :global(.arrow) { transform: scaleX(-1) translateX(4px); }
-  /* LTR islands (phone, email) still align with the reading start of the page */
+  .direct-cell + .direct-cell { border-top: 1px solid rgb(255 255 255 / 0.08); }
+  @media (min-width: 640px) {
+    .direct-cell + .direct-cell { border-top: 0; }
+    .direct-cell:nth-child(n + 3) { border-top: 1px solid rgb(255 255 255 / 0.08); }
+    .direct-cell:nth-child(even) { border-inline-start: 1px solid rgb(255 255 255 / 0.08); }
+  }
+  @media (min-width: 1024px) {
+    .direct-cell:nth-child(n + 3) { border-top: 0; }
+    .direct-cell + .direct-cell { border-inline-start: 1px solid rgb(255 255 255 / 0.08); }
+  }
   :global([dir='rtl']) .contact-row .ltr { text-align: right; }
 </style>

@@ -25,7 +25,7 @@ for (const [loc, d] of Object.entries(dicts)) {
     img { width: 100%; position: relative; }
     .bar { position: absolute; inset: auto 0 0 0; height: 6px; background: linear-gradient(90deg, transparent, #16AB79, transparent); }
   </style></head><body><div class="grid"></div>
-    <div style="position:relative"><p class="k"><i></i>${d.hero.kicker}</p><h1>${d.hero.title}</h1></div>
+    <div style="position:relative"><p class="k"><i></i>Sistim</p><h1>${d.hero.title}</h1></div>
     <img src="${pub('brand/wordmark-circuit-960.png')}" alt="">
     <div class="bar"></div></body></html>`, { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);

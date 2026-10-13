@@ -1,0 +1,28 @@
+---
+// Mobile only: slim bottom bar (Free consultation + WhatsApp). It slides in once the hero has
+// scrolled away and hides while the final CTA or the footer is on screen (see scripts/boot.ts).
+import { t, localePath, type Locale } from '../i18n';
+import { whatsappHref } from '../config/contact';
+import Icon from './Icon.astro';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const d = t(locale);
+---
+<div id="mobile-bar" class="mobile-bar fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden" inert>
+  <div class="flex items-center gap-2 rounded-full border border-white/12 bg-navy-950/90 p-1.5 shadow-[0_-10px_40px_-12px_rgb(0_0_0/0.7)] backdrop-blur-md">
+    <a href={localePath(locale, 'consultation')} class="btn btn-primary min-h-12 flex-1">
+      <span>{d.consult.cta}</span>
+      <Icon name="arrow" size={18} class="arrow" />
+    </a>
+    <a href={whatsappHref()} target="_blank" rel="noopener" class="grid size-12 shrink-0 place-items-center rounded-full border border-white/15 text-emerald-400">
+      <Icon name="whatsapp" size={22} />
+      <span class="sr-only">{d.nav.whatsapp} {d.a11y.newTab}</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .mobile-bar { transform: translateY(120%); transition: transform var(--duration-base) var(--ease-out-expo); }
+  .mobile-bar:global(.is-visible) { transform: none; }
+  :global(html.menu-open) .mobile-bar { transform: translateY(120%); }
+</style>

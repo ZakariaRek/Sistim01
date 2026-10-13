@@ -14,7 +14,7 @@ for (const loc of locales) {
     const logs = [];
     page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) logs.push(`${m.type()}: ${m.text()}`); });
     page.on('pageerror', (e) => logs.push(`pageerror: ${e.message}`));
-    const path = loc === 'ar' ? '/' : `/${loc}/`;
+    const path = `/${loc}/`;
     await page.goto(base + path, { waitUntil: 'networkidle' });
     await page.waitForTimeout(3200);
     const tag = `${loc}-${w}${reduced ? '-reduced' : ''}`;

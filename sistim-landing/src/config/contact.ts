@@ -16,11 +16,6 @@ export const CONTACT = {
   instagramUrl: 'https://www.instagram.com/sistim01/',
   instagramHandle: '@sistim01',
 
-  city: 'Marrakesh',
-  countryCode: 'MA',
-
-  /** PLACEHOLDER: add a street address here if you ever want one shown. Left empty on purpose. */
-  streetAddress: '',
   /** PLACEHOLDER: other social profiles (LinkedIn, Facebook, TikTok…). Empty until you add real URLs. */
   otherSocials: [] as string[],
 } as const;

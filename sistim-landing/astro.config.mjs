@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // PLACEHOLDER domain: set SITE_URL when building (see README) or edit src/config/site.ts
 const SITE_URL = (process.env.SITE_URL || 'https://example.com').replace(/\/$/, '');
+const HREFLANG = { ar: 'ar-MA', fr: 'fr', en: 'en' };
 
 export default defineConfig({
   site: SITE_URL,
@@ -14,12 +15,25 @@ export default defineConfig({
   i18n: {
     locales: ['ar', 'fr', 'en'],
     defaultLocale: 'ar',
-    routing: { prefixDefaultLocale: false },
+    // Every language lives under its own prefix (/ar/, /fr/, /en/). "/" is a small entry page
+    // that picks the language from the device (src/pages/index.astro), so no server redirect.
+    routing: { prefixDefaultLocale: true, redirectToDefaultLocale: false },
   },
   integrations: [
     react(),
     sitemap({
-      i18n: { defaultLocale: 'ar', locales: { ar: 'ar-MA', fr: 'fr', en: 'en' } },
+      // hreflang alternates for every localized page, plus "/" as x-default for the home page
+      serialize(item) {
+        const path = new URL(item.url).pathname;
+        const m = path.match(/^\/(ar|fr|en)\/(.*)$/);
+        const rest = m ? m[2] : path === '/' ? '' : null;
+        if (rest === null) return item;
+        item.links = [
+          ...Object.entries(HREFLANG).map(([loc, lang]) => ({ lang, url: `${SITE_URL}/${loc}/${rest}` })),
+          ...(rest === '' ? [{ lang: 'x-default', url: `${SITE_URL}/` }] : []),
+        ];
+        return item;
+      },
     }),
   ],
   build: { inlineStylesheets: 'always' },

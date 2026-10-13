@@ -3,13 +3,10 @@
  * what is set here. Change a value, rebuild, and every page follows.
  */
 
-/** Length of the free consultation call/chat, in minutes. */
+/** Length of the free consultation call or chat, in minutes. */
 export const DURATION_MINUTES = 20;
 
-/** How the consultation can happen. Allowed ids: 'whatsapp_call' | 'whatsapp_chat' | 'phone'. */
-export const CHANNELS = ['whatsapp_call', 'whatsapp_chat', 'phone'] as const;
-
-/** We contact the visitor within this many hours after they send the brief. */
+/** We contact the visitor on WhatsApp within this many hours after they send the form. */
 export const REPLY_TIME_HOURS = 24;
 
 /**
@@ -22,5 +19,11 @@ export const INCLUDES = ['call_or_chat', 'written_recommendation'] as const;
 /** true = the site may promise a price estimate. false = it never mentions one. */
 export const INCLUDES_ESTIMATE = false;
 
-export type Channel = (typeof CHANNELS)[number];
+/**
+ * true = show ./brand/thankyou.jpg in the visual panel of the thank-you screen, labelled
+ * "Illustrative image". Needs the file to exist; otherwise no photo is used anywhere.
+ */
+export const SHOW_THANKYOU_PHOTO = false;
+
+export const includesCall = (INCLUDES as readonly string[]).includes('call_or_chat');
 export const includesRecommendation = (INCLUDES as readonly string[]).includes('written_recommendation');

@@ -1,24 +1,43 @@
 ---
-// Free consultation brief: /ar/consultation/, /fr/consultation/, /en/consultation/
+// Free consultation: /ar/consultation/, /fr/consultation/, /en/consultation/
+// Split screen: short 4-step form on the start side, artistic brand panel on the end side.
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { siWhatsapp } from 'simple-icons';
 import Base from '../../layouts/Base.astro';
 import LangSwitcher from '../../components/LangSwitcher.astro';
 import Icon from '../../components/Icon.astro';
-import BriefFlow from '../../components/islands/BriefFlow';
+import ConsultFlow from '../../components/islands/ConsultFlow';
 import { LOCALES, localePath, t, type Locale } from '../../i18n';
 import { consultCopy } from '../../i18n/consult';
-import { CONTACT, encodedEmail, whatsappHref } from '../../config/contact';
-import { DURATION_MINUTES, REPLY_TIME_HOURS, includesRecommendation } from '../../config/consultation';
+import { CONTACT, encodedEmail } from '../../config/contact';
+import { DURATION_MINUTES, REPLY_TIME_HOURS, SHOW_THANKYOU_PHOTO, includesCall, includesRecommendation } from '../../config/consultation';
 
 export const getStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
 const { lang } = Astro.params as { lang: Locale };
 const d = t(lang);
 const c = consultCopy(lang);
 const home = localePath(lang);
+
+// Thank-you photo: only when the flag is on AND ./brand/thankyou.jpg was processed by `npm run brand`
+const photoSrc = SHOW_THANKYOU_PHOTO && existsSync(join(process.cwd(), 'public/brand/thankyou.webp')) ? '/brand/thankyou.webp' : undefined;
 ---
 <Base locale={lang} page="consultation" title={d.brief.meta.title} description={d.brief.meta.description}>
-  <header class="sticky top-0 z-40 border-b border-white/8 bg-navy-900/85 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-    <div class="shell flex h-16 items-center justify-between gap-3">
+  <ConsultFlow
+    client:load
+    locale={lang}
+    s={d.brief}
+    copy={{ cta: c.cta, title: c.title, lead: c.lead }}
+    cfg={{ duration: DURATION_MINUTES, hours: REPLY_TIME_HOURS, includesCall, includesRecommendation }}
+    wa={CONTACT.whatsappNumber}
+    eml={encodedEmail()}
+    handle={CONTACT.instagramHandle}
+    homeHref={home}
+    newTab={d.a11y.newTab}
+    waIcon={siWhatsapp.path}
+    photoSrc={photoSrc}
+  >
+    <header class="consult-header">
       <a href={home} class="flex items-center gap-2.5 rounded-full" aria-label={d.a11y.home}>
         <picture>
           <source srcset="/brand/mark.avif" type="image/avif" />
@@ -38,32 +57,13 @@ const home = localePath(lang);
           <span class="sr-only">{d.brief.ui.close}</span>
         </a>
       </div>
-    </div>
-  </header>
-
-  <main id="main" tabindex="-1" class="relative outline-none">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(800px_400px_at_50%_0%,rgb(22_171_121/0.12),transparent_70%)]" aria-hidden="true"></div>
-    <div class="relative mx-auto w-[min(100%-2rem,42rem)] pb-24 pt-10 md:pt-16">
-      <BriefFlow
-        client:load
-        locale={lang}
-        s={d.brief}
-        intro={{ kicker: c.cta, title: c.title, lead: c.lead, facts: c.facts }}
-        cfg={{ duration: DURATION_MINUTES, hours: REPLY_TIME_HOURS, includesRecommendation }}
-        wa={CONTACT.whatsappNumber}
-        eml={encodedEmail()}
-        homeHref={home}
-        newTab={d.a11y.newTab}
-        waIcon={siWhatsapp.path}
-        channelNames={d.consult.channelNames}
-      />
-      <noscript>
-        <p class="mt-8 text-muted">
-          <a class="btn btn-primary min-h-12 px-6" href={whatsappHref()}>{d.contact.direct.whatsapp} · <span class="ltr">{CONTACT.phoneDisplay}</span></a>
-        </p>
-      </noscript>
-    </div>
-  </main>
+    </header>
+  </ConsultFlow>
+  <noscript>
+    <p style="padding:2rem;text-align:center">
+      <a class="btn btn-primary min-h-12 px-6" href={`https://wa.me/${CONTACT.whatsappNumber}`}>{d.contact.direct.whatsapp} · <span class="ltr">{CONTACT.phoneDisplay}</span></a>
+    </p>
+  </noscript>
 </Base>
 
 <script>

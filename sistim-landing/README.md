@@ -1,8 +1,8 @@
 # Sistim landing page
 
-Multilingual (Darija / French / English) static website for **Sistim**, a Moroccan digital studio: a landing page and a free-consultation brief in each language.
+Multilingual (Darija / French / English) static website for **Sistim**, a Moroccan digital studio: a landing page and a short free-consultation form in each language.
 
-Stack: Astro (static output and i18n routing), React islands for the consultation brief and the 3D hero, TypeScript, Tailwind CSS v4, GSAP + ScrollTrigger, Lenis and Three.js (one lazy-loaded scene, landing page only).
+Stack: Astro (static output and i18n routing), React islands for the consultation form and the 3D hero, TypeScript, Tailwind CSS v4, GSAP + ScrollTrigger, Lenis and Three.js (one lazy-loaded scene, landing page only).
 
 ## Run it fff
 
@@ -19,7 +19,7 @@ Routes:
 |---|---|
 | `/` | Entry page: picks the visitor's language and forwards (see below). Without JavaScript it is a 3-button language chooser. |
 | `/ar/`, `/fr/`, `/en/` | Landing page in Darija (RTL), French, English |
-| `/ar/consultation/`, `/fr/consultation/`, `/en/consultation/` | Free consultation brief |
+| `/ar/consultation/`, `/fr/consultation/`, `/en/consultation/` | Free consultation: 4-screen form with a split-screen brand panel |
 
 ## Before you deploy: set your domain
 
@@ -37,18 +37,18 @@ Or change the default in **both** `src/config/site.ts` and `astro.config.mjs`.
 |---|---|
 | All text (one file per language, same keys) | `src/i18n/ar.ts`, `src/i18n/fr.ts`, `src/i18n/en.ts` |
 | Email, phone, WhatsApp, Instagram (single source) | `src/config/contact.ts` |
-| Free consultation facts (duration, channels, reply time, what it includes) | `src/config/consultation.ts` |
-| Brief questions, options, order and branching | `src/config/brief.ts` |
+| Free consultation facts (duration, reply time, what it includes, thank-you photo) | `src/config/consultation.ts` |
+| Form steps, business types, needs, phone validation | `src/config/brief.ts` (labels in `brief` in the i18n files) |
 | Show or hide prices (`SHOW_PRICES`), the prices in MAD, domain | `src/config/site.ts` |
 | Colours, fonts, type scale, easing and duration tokens | `src/styles/global.css` (`@theme` block); JS motion tokens in `src/scripts/tokens.ts` |
 | Sections | `src/components/*.astro` (assembled in `Landing.astro`) |
-| Consultation brief UI | `src/components/islands/BriefFlow.tsx`, page in `src/pages/[lang]/consultation.astro` |
+| Consultation form + brand panel | `src/components/islands/ConsultFlow.tsx` (form), `ConsultPanel.tsx` (circuit, illustrations), page in `src/pages/[lang]/consultation.astro` |
 | Motion system (Lenis, reveals, timeline, magnetic buttons, tilt) | `src/scripts/motion.ts` |
 | 3D hero | `src/scripts/hero-scene.ts` (gated by `src/components/islands/HeroScene.tsx`) |
 
 TypeScript checks that `ar.ts` and `fr.ts` have exactly the same shape as `en.ts`, so a missing key fails `npx tsc --noEmit`.
 
-**Prices:** set `SHOW_PRICES = true` in `src/config/site.ts` to show "from" prices (Starter 7 500, Business booking 18 000, Business e-commerce 28 000, Custom SaaS 120 000 MAD). By default each offer shows "Request a quote", which opens the brief (Starter and Custom SaaS preselect the matching need).
+**Prices:** set `SHOW_PRICES = true` in `src/config/site.ts` to show "from" prices (Starter 7 500, Business booking 18 000, Business e-commerce 28 000, Custom SaaS 120 000 MAD). By default each offer shows "Request a quote", which opens the consultation form (Starter and Custom SaaS preselect the matching need on step 2).
 
 **Placeholder left on purpose** in `src/config/contact.ts`: `otherSocials` is empty. No address is published anywhere on the site.
 
@@ -58,26 +58,37 @@ TypeScript checks that `ar.ts` and `fr.ts` have exactly the same shape as `en.ts
 
 | Value | Default | Used in |
 |---|---|---|
-| `DURATION_MINUTES` | `20` | Fact chips, process step 1, thank-you step 2 |
-| `CHANNELS` | `['whatsapp_call', 'whatsapp_chat', 'phone']` | Fact chips ("By WhatsApp call, WhatsApp chat or phone call") and the "preferred channel" question. Remove one and it disappears everywhere. |
-| `REPLY_TIME_HOURS` | `24` | Fact chips, thank-you step 2 |
-| `INCLUDES` | `['call_or_chat', 'written_recommendation']` | Without `written_recommendation`, the intro uses the shorter lead (no recommendation promise) and the thank-you screen drops step 3 |
+| `DURATION_MINUTES` | `20` | Landing fact chips, process step 1, panel reassurance, thank-you step 2 |
+| `REPLY_TIME_HOURS` | `24` | Landing fact chips, panel reassurance, thank-you step 2 |
+| `INCLUDES` | `['call_or_chat', 'written_recommendation']` | Without `call_or_chat` the "free call or chat" line disappears everywhere. Without `written_recommendation` the intro uses a shorter lead (no recommendation promise) and the thank-you screen drops step 3. |
 | `INCLUDES_ESTIMATE` | `false` | Nothing on the site mentions a price estimate. Wording for `true` is not written yet: add it to the i18n files if you switch it on. |
+| `SHOW_THANKYOU_PHOTO` | `false` | `true` + a file `../brand/thankyou.jpg` (run `npm run brand` to process it) shows that photo in the panel on the thank-you screen with an "Illustrative image" label. No photo is used otherwise. |
 
-To change a question or add an option, edit `src/config/brief.ts` (ids, order, `required`, `showIf`) and add the matching labels under `brief.steps`, `brief.fields` and `brief.options` in all three i18n files.
+## The consultation form
 
-## Free consultation: receiving the briefs
+Four screens, about one minute:
 
-The brief has no backend of its own. On submit it builds a plain-text summary in the visitor's language plus a JSON payload (locale, timestamp, answers) and POSTs it to `PUBLIC_CONSULTATION_ENDPOINT`. If that is empty, nothing is sent: the visitor lands on the thank-you screen and uses **Continue on WhatsApp** (pre-filled summary) or the email button. If the POST fails, the visitor sees the same WhatsApp / email buttons, so the lead is never lost.
+1. **Business type** (required): six cards with an icon each. A tap or click moves on by itself after a beat; keyboard users press Enter.
+2. **What do you need** (optional, with Skip): five cards plus an optional one-line sentence.
+3. **Name**: first and last name.
+4. **WhatsApp number + consent**: Moroccan 06/07 formats and `+212…` are normalised to `+212…`; any other international number starting with `+` (8 to 15 digits) is accepted. A health business sees "Do not send us any patient data."
 
-Spam protection: a hidden honeypot field plus a minimum fill time (8 seconds). Progress is saved in the visitor's browser and cleared after a successful submit.
+Nothing else is asked (no budget, deadline, links or channel); the rest is discussed in the consultation. Progress is saved in the visitor's browser (if storage is available) and cleared after a successful send.
+
+The right-hand panel (a banner on phones) is decorative and `aria-hidden`: a circuit that draws one more segment and lights one more node for each completed step, finishing with a pulse and spark lines on the thank-you screen; a very large "س"; and a hand-drawn line illustration that changes with the business type (health, shop, architect, finance, freelancer, generic). With reduced motion the circuit is shown fully drawn and still. There is no Three.js or canvas on this page.
+
+## Receiving the requests
+
+The form has no backend of its own. On submit it builds a plain-text summary in the visitor's language plus a JSON payload (locale, timestamp, answers) and POSTs it to `PUBLIC_CONSULTATION_ENDPOINT`. If that is empty, nothing is sent: the visitor lands on the thank-you screen and uses **Continue on WhatsApp** (short pre-filled message) or the email button. If the POST fails, the visitor sees the same buttons with a friendly error, so the lead is never lost.
+
+Spam protection: a hidden honeypot field plus a minimum fill time (3 seconds).
 
 1. Copy `.env.example` to `.env`.
 2. Pick one service:
    - **Formspree:** create an account at formspree.io, click **New form**, then copy the endpoint (looks like `https://formspree.io/f/abcdwxyz`). Set `PUBLIC_CONSULTATION_ENDPOINT=https://formspree.io/f/abcdwxyz` and leave `PUBLIC_CONSULTATION_ACCESS_KEY` empty.
    - **Web3Forms:** at web3forms.com, enter `sistim01.01@gmail.com` to receive an access key by email. Set `PUBLIC_CONSULTATION_ENDPOINT=https://api.web3forms.com/submit` and `PUBLIC_CONSULTATION_ACCESS_KEY=<your key>`. Web3Forms keys are meant to be public; no secret goes into the site.
 3. Rebuild (`npm run build`). On Vercel, Netlify or Cloudflare, add the same variables in the project's environment settings instead of `.env`.
-4. Send yourself a test brief. The first Formspree submission asks you to confirm the form by email.
+4. Send yourself a test request. The first Formspree submission asks you to confirm the form by email.
 
 ## Language detection on "/"
 
@@ -119,11 +130,11 @@ node scripts/qa-shots.mjs http://localhost:4321 375,768,1440 ar,fr,en --full   #
 node scripts/qa-interact.mjs                                                    # mobile menu, reduced motion, focus
 node scripts/qa-lang.mjs                                                        # language detection on "/"
 node scripts/qa-landing-consult.mjs                                             # consultation CTAs, band, mobile bar
-node scripts/qa-brief.mjs                                                       # brief end to end, every branch
+node scripts/qa-consult.mjs                                                     # consultation form end to end, all locales, illustrations, RTL
 node scripts/lighthouse.mjs http://localhost:4321                                # mobile Lighthouse (add --desktop)
 ```
 
-For `qa-brief.mjs`, build with `PUBLIC_CONSULTATION_ENDPOINT=https://formspree.io/f/qa-test`: the script intercepts that URL, so nothing is really sent. For Lighthouse, build with `SITE_URL=http://localhost:4321` so canonical URLs match the audited host. Screenshots go to `qa/` (git-ignored). Run `npx playwright install chromium` once first.
+For `qa-consult.mjs`, build with `PUBLIC_CONSULTATION_ENDPOINT=https://formspree.io/f/qa-test`: the script intercepts that URL, so nothing is really sent. For Lighthouse, build with `SITE_URL=http://localhost:4321` so canonical URLs match the audited host. Screenshots go to `qa/` (git-ignored). Run `npx playwright install chromium` once first.
 
 ## Deploy it yourself
 
@@ -137,7 +148,7 @@ The site is fully static: build once and upload `dist/`. No server redirects are
 4. Framework preset: **Astro** (detected). Build command `npm run build`, output directory `dist`.
 5. **Environment Variables:** `SITE_URL=https://your-domain.ma`, plus `PUBLIC_CONSULTATION_ENDPOINT` (and `PUBLIC_CONSULTATION_ACCESS_KEY` for Web3Forms).
 6. Deploy, then add your domain under **Settings → Domains** and follow the DNS instructions.
-7. Check `https://your-domain/sitemap-index.xml`, `/robots.txt` and one test brief.
+7. Check `https://your-domain/sitemap-index.xml`, `/robots.txt` and send one test request.
 
 ### Other hosts
 

@@ -3,6 +3,7 @@
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 
 const SRC_URL = new URL('../../brand/', import.meta.url);
 const SRC = (f) => fileURLToPath(new URL(f, SRC_URL));
@@ -74,16 +75,25 @@ await save(sharp(await toBuf(swoosh)).trim({ threshold: 1 }), 'wordmark-swoosh',
 
 // 3) Badge mark: the "س" + green dot of the badge on its own navy disc (legible at favicon sizes)
 const badge = await keyNavy('logo-badge.jpg');
-const glyph = await sharp(await toBuf(badge)).extract({ left: 430, top: 515, width: 1120, height: 820 }).png().toBuffer();
+const glyph = await sharp(await toBuf(badge)).extract({ left: 440, top: 520, width: 1210, height: 840 }).png().toBuffer();
 const D = 1600;
 const disc = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${D}" height="${D}"><circle cx="${D / 2}" cy="${D / 2}" r="${D / 2}" fill="#232B3B"/></svg>`);
 const square = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${D}" height="${D}"><rect width="${D}" height="${D}" fill="#232B3B"/></svg>`);
-const glyphScaled = await sharp(glyph).resize({ width: 1180 }).toBuffer();
+const glyphScaled = await sharp(glyph).resize({ width: 1060 }).toBuffer();
 const gm = await sharp(glyphScaled).metadata();
 const pos = { left: Math.round((D - gm.width) / 2), top: Math.round((D - gm.height) / 2) };
 const markDisc = await sharp(disc).composite([{ input: glyphScaled, ...pos }]).png().toBuffer();
 const markSquare = await sharp(square).composite([{ input: glyphScaled, ...pos }]).png().toBuffer();
 await save(sharp(markDisc), 'mark', [96]);
+
+// Large "س" for the consultation page panel: the glyph alone on transparent, used at very low contrast
+await save(sharp(glyph), 'glyph', [900], ['png', 'webp']);
+
+// Optional thank-you photo (only used when SHOW_THANKYOU_PHOTO is true in src/config/consultation.ts)
+if (existsSync(SRC('thankyou.jpg'))) {
+  await sharp(SRC('thankyou.jpg')).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 80 }).toFile(out('brand/thankyou.webp'));
+  console.log('thankyou.webp written');
+}
 
 // Favicons
 const ico = [];

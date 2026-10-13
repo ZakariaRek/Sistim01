@@ -30,7 +30,7 @@ export interface LogoController {
   celebrate(): void;
   resize(): void;
   degrade(): void;
-  info(): { geometries: number; textures: number; programs: number; calls: number; pixelRatio: number; lowQuality: boolean };
+  info(): { geometries: number; textures: number; programs: number; calls: number; pixelRatio: number; lowQuality: boolean; spin: number; benchFrames: number; medianDt: number; triangles: number };
   /** QA helper: hold the letter at a fixed angle in degrees (null releases it). */
   freeze(deg: number | null): void;
   dispose(): void;
@@ -121,27 +121,33 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
 
   const stroke = strokeWidth(rawLetter);
   const dotRadius = strokeWidth(rawDot); // a disc: 2A/P = r
-  const letterShapes = cleanShapes(rawLetter, stroke * 0.03);
-  const dotShapes = cleanShapes(rawDot, stroke * 0.03);
-  const bevelSegments = lowQuality ? 3 : 8;
-  const curveSegments = lowQuality ? 2 : 4;
   const depth = stroke * 0.35;
   const bevelThickness = stroke * 0.3;
 
-  const extrude = (shapes: Shape[], bevelSize: number) =>
-    new ExtrudeGeometry(shapes, { depth, bevelEnabled: true, bevelThickness, bevelSize, bevelOffset: -bevelSize, bevelSegments, curveSegments, steps: 1 });
+  /** Letter and dot geometry at the given detail level (low = fewer bevel steps and outline points). */
+  const build = (low: boolean) => {
+    const bevelSegments = low ? 3 : 8;
+    const curveSegments = low ? 2 : 4;
+    const minDist = stroke * (low ? 0.07 : 0.03);
+    const extrude = (shapes: Shape[], bevelSize: number) =>
+      new ExtrudeGeometry(shapes, { depth, bevelEnabled: true, bevelThickness, bevelSize, bevelOffset: -bevelSize, bevelSegments, curveSegments, steps: 1 });
+    return {
+      letter: extrude(cleanShapes(rawLetter, minDist), stroke * 0.3),
+      dot: extrude(cleanShapes(rawDot, minDist), Math.min(dotRadius * 0.9, stroke * 0.3)),
+    };
+  };
+  let geos = build(lowQuality);
 
-  const letterGeo = extrude(letterShapes, stroke * 0.3);
-  const dotGeo = extrude(dotShapes, Math.min(dotRadius * 0.9, stroke * 0.3));
-
-  // centre on the letter's bounding box and normalise to 3 units wide
-  letterGeo.computeBoundingBox();
-  const lb = letterGeo.boundingBox!;
+  // centre on the letter's bounding box and normalise to 3 units wide (the same transform for every detail level)
+  geos.letter.computeBoundingBox();
+  const lb = geos.letter.boundingBox!;
   const cx = (lb.min.x + lb.max.x) / 2, cy = (lb.min.y + lb.max.y) / 2, cz = (lb.min.z + lb.max.z) / 2;
   const s = 3 / (lb.max.x - lb.min.x);
-  for (const g of [letterGeo, dotGeo]) { g.translate(-cx, -cy, -cz); g.scale(s, s, s); }
-  dotGeo.computeBoundingBox();
-  const db = dotGeo.boundingBox!;
+  const place = (g: ExtrudeGeometry) => { g.translate(-cx, -cy, -cz); g.scale(s, s, s); return g; };
+  place(geos.letter);
+  place(geos.dot);
+  geos.dot.computeBoundingBox();
+  const db = geos.dot.boundingBox!;
   const dotCx = (db.min.x + db.max.x) / 2, dotCy = (db.min.y + db.max.y) / 2, dotW = db.max.x - db.min.x;
 
   const letterMat = new MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0, clearcoat: lowQuality ? 0 : 0.6, clearcoatRoughness: 0.12, envMapIntensity: 0.95 });
@@ -150,7 +156,9 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
 
   const logo = new Group();
   logo.rotation.x = Math.PI; // SVG is y-down: a proper rotation (not a mirror), so the letter keeps its true shape
-  logo.add(new Mesh(letterGeo, letterMat), new Mesh(dotGeo, dotMat));
+  const letterMesh = new Mesh(geos.letter, letterMat);
+  const dotMesh = new Mesh(geos.dot, dotMat);
+  logo.add(letterMesh, dotMesh);
 
   const glowTex = glowTexture();
   const glowMat = new SpriteMaterial({ map: glowTex, color: 0xffffff, blending: AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.4 });
@@ -220,9 +228,15 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
   // --- render loop (runs only while on screen and the tab is visible)
   let tSec = 0;
   let first = true;
+  // Slow-device check on real frame timing (GSAP's delta is lag-smoothed). Two looks: just after
+  // start-up and again once the page has settled; either one can switch to the simple material.
   const bench: number[] = [];
-  let degraded = false;
+  let frames = 0;
+  let lastFrameAt = 0;
   const frame = (_t: number, dtMs: number) => {
+    const now = performance.now();
+    const real = lastFrameAt ? now - lastFrameAt : 0;
+    lastFrameAt = now;
     const dt = Math.min(dtMs, 50) / 1000;
     tSec += dt;
     const k = 1 - Math.pow(1 - 0.08, dt * 60);
@@ -249,13 +263,14 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
 
     renderer.render(scene, camera);
     if (first) { first = false; opts.onFirstFrame(); }
-    else if (!degraded && bench.length < 14) {
-      bench.push(dtMs);
-      if (bench.length === 14) {
-        const sorted = [...bench].sort((a, b) => a - b);
-        if (sorted[7] > 42 && !lowQuality) api.degrade(); // slow device: simplify
-        degraded = true;
+    else {
+      frames++;
+      if (frames > 3 && frames <= 27) bench.push(real); // skip warm-up frames (shader compile)
+      if ((frames === 27 || frames === 70) && !lowQuality) {
+        const w = bench.slice(-24).sort((a, b) => a - b);
+        if (w[Math.floor(w.length / 2)] > 40) api.degrade(); // slow device: simplify
       }
+      if (frames > 27 && frames <= 70) { bench.push(real); if (bench.length > 24) bench.shift(); }
     }
   };
 
@@ -305,12 +320,22 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
       lowQuality = true;
       letterMat.clearcoat = 0;
       letterMat.needsUpdate = true;
+      // lighter geometry: fewer bevel steps and outline points, same pose
+      const light = build(true);
+      place(light.letter);
+      place(light.dot);
+      const old = geos;
+      geos = light;
+      letterMesh.geometry = light.letter;
+      dotMesh.geometry = light.dot;
+      old.letter.dispose();
+      old.dot.dispose();
       pixelRatio = 1;
       resize();
     },
     info() {
       const i = renderer.info;
-      return { geometries: i.memory.geometries, textures: i.memory.textures, programs: i.programs?.length ?? 0, calls: i.render.calls, pixelRatio, lowQuality };
+      return { geometries: i.memory.geometries, textures: i.memory.textures, programs: i.programs?.length ?? 0, calls: i.render.calls, pixelRatio, lowQuality, spin: state.spin, triangles: i.render.triangles, benchFrames: frames, medianDt: bench.length ? [...bench].sort((a, b) => a - b)[Math.floor(bench.length / 2)] : 0 };
     },
     freeze(deg) { frozen = deg; if (deg !== null) { gsap.killTweensOf(state); busy = false; } },
     dispose() {
@@ -323,7 +348,7 @@ export function createLogoScene(canvas: HTMLCanvasElement, opts: LogoOptions): L
       document.removeEventListener('focusout', onFocusOut);
       window.removeEventListener('pointermove', onPointer);
       canvas.removeEventListener('webglcontextlost', onLost);
-      letterGeo.dispose(); dotGeo.dispose();
+      geos.letter.dispose(); geos.dot.dispose();
       letterMat.dispose(); dotMat.dispose(); glowMat.dispose(); glowTex.dispose();
       envTarget.dispose();
       scene.environment = null;

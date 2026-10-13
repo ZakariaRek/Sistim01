@@ -154,3 +154,78 @@ The site is fully static: build once and upload `dist/`. No server redirects are
 
 - **Cloudflare Pages:** build command `npm run build`, output directory `dist`, root directory `sistim-landing` if needed, the same environment variables, and `NODE_VERSION=22` or newer.
 - **Netlify:** build command `npm run build`, publish directory `dist`, base directory `sistim-landing` if needed, the same environment variables.
+
+## 3D logo branch
+
+Branch `feature/3d-logo-consultation` replaces the big low-contrast "س" and the business-type illustrations in the consultation page's visual panel with one real-time 3D logo: the Arabic letter from the Sistim badge, spinning with every step of the form. `main` is untouched.
+
+### What it is
+
+- `scripts/trace-logo.mjs` traces `../brand/logo-badge.jpg` (upscale 4x, separate the white letter and the emerald dot by colour, potrace, SVGO) into `src/assets/logo-s.svg`, with two paths (`#letter`, `#dot`). It also writes `public/brand/logo-s-poster.webp/.png`, the instant poster and the no-WebGL fallback. Re-run it with `node scripts/trace-logo.mjs`; the originals in `../brand/` are never modified.
+- `src/lib/logo3d/scene.ts` is the Three.js scene (extruded pillowy letter, domed emerald dot with a pulsing glow, RoomEnvironment lighting through PMREM, ACES tone mapping, transparent canvas).
+- `src/components/consultation/Logo3D.tsx` is the React island (`client:idle`). It shows the poster first and crossfades to the canvas on the first frame. `three` is imported dynamically inside it, so Three.js is not in the initial bundle and is only fetched on `/consultation` pages that can run it.
+- The form (`ConsultFlow`) writes `{ step, direction, businessType, status }` to a nanostores map (`src/lib/logo3d/store.ts`); the logo only reads it.
+
+### Run it
+
+```bash
+git switch feature/3d-logo-consultation
+npm install
+npm run dev        # http://localhost:4321/en/consultation/
+```
+
+Open `/ar/consultation/`, `/fr/consultation/` or `/en/consultation/`. Pick a business type, go forward and back: the letter turns once per step (reverse on Back) and does a longer spin when the form is sent. Add `?qa3d=1` to force the 3D scene on a software renderer and to expose a debugging hook (see below).
+
+### Tune it
+
+Everything is in `src/config/logo3d.ts`:
+
+| Key | Default | What it does |
+|---|---|---|
+| `ENABLE_3D_LOGO` | `true` | `false` = never load Three.js; the poster (with a CSS turn per step) is shown instead |
+| `STEP_SPIN_TURNS` | `1` | Turns per step change |
+| `STEP_SPIN_MS` | `1400` | Spin duration |
+| `STEP_SPIN_EASE` | `sine.inOut` | GSAP ease |
+| `IDLE_SPIN_EVERY_MS` | `9000` | Automatic spin while idle (paused while a field has focus) |
+| `IDLE_SWAY_DEG` | `20` | Idle sway either side of front-facing |
+| `POINTER_TILT_DEG` | `12` | Damped pointer tilt (desktop, fine pointer only; 0 disables) |
+| `SUBMIT_SPIN_TURNS` / `SUBMIT_SPIN_MS` | `2` / `2800` | The "sent" spin, landing front-facing |
+| `MIN_SPIN_MS` / `MAX_TURNS_PER_SECOND` | `1000` / `1.15` | Safety limits: every spin is lengthened if needed so it never turns faster than this |
+
+Note on speed: GSAP's `power3.inOut` peaks at about 2.7 turns per second over 1.1 s, which breaks the "never faster than about one turn per second" rule, so the default is a gentler `sine.inOut` over 1.4 s (peak about 1.1 turns per second). The limit is enforced in code for any ease you choose.
+
+### Turn 3D off
+
+Set `ENABLE_3D_LOGO = false` in `src/config/logo3d.ts` and rebuild. The panel then shows the traced poster only.
+
+3D is also skipped automatically (poster fallback) for: `prefers-reduced-motion`, no WebGL, a lost WebGL context, and **software rasterisers** (SwiftShader, llvmpipe: no GPU acceleration). On weak devices (4 or fewer cores, 4 GB or less memory, or a slow frame benchmark) it runs in light mode: no clearcoat, fewer bevel steps, no antialiasing, capped pixel ratio and frame rate.
+
+### Compare with main
+
+```bash
+git diff --stat main...feature/3d-logo-consultation
+git switch main && npm run build && npm run preview   # in one terminal
+git switch feature/3d-logo-consultation && npm run build && npx astro preview --port 4322   # in another
+```
+
+Or open two checkouts side by side with `git worktree add ../sistim-main main`.
+
+### QA scripts (local only)
+
+With `npm run preview` running, and built with `PUBLIC_CONSULTATION_ENDPOINT=https://formspree.io/f/qa-test` so the submit step is intercepted:
+
+```bash
+node scripts/qa-logo3d.mjs            # overlay vs the badge, spin speed, memory over 20 steps, fallbacks, throttling, thank-you
+node scripts/qa-logo3d-frames.mjs http://localhost:4321 0,45,90,180
+node scripts/record-logo3d.mjs        # short webm of the spin across steps
+```
+
+### Push the branch yourself (so Vercel makes a preview URL)
+
+I never push. When you are ready:
+
+```bash
+git push -u origin feature/3d-logo-consultation
+```
+
+Vercel then builds a Preview Deployment for that branch and comments the URL on the pull request (or shows it under **Deployments**). In the Vercel project settings make sure **Root Directory** is `sistim-landing` and that the `SITE_URL` and `PUBLIC_CONSULTATION_ENDPOINT` variables are enabled for the **Preview** environment too. Merging into `main` is up to you.

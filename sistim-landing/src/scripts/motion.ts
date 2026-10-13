@@ -23,7 +23,6 @@ export function initMotion({ reduced }: { reduced: boolean }) {
   };
 
   const ctx = gsap.context(() => {
-    const progressBar = document.querySelector<HTMLElement>('.scroll-progress');
     const timeline = document.querySelector<HTMLElement>('[data-timeline]');
 
     if (reduced) {
@@ -31,14 +30,6 @@ export function initMotion({ reduced }: { reduced: boolean }) {
       if (timeline) {
         timeline.style.setProperty('--progress', '1');
         timeline.querySelectorAll('[data-step]').forEach((s) => s.classList.add('is-active'));
-      }
-      if (progressBar) {
-        const onScroll = () => {
-          const max = document.documentElement.scrollHeight - innerHeight;
-          progressBar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-        };
-        onScroll();
-        listen(window, 'scroll', onScroll, { passive: true });
       }
       return;
     }
@@ -51,14 +42,6 @@ export function initMotion({ reduced }: { reduced: boolean }) {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
     cleanups.push(() => { gsap.ticker.remove(raf); lenis?.destroy(); lenis = null; });
-
-    // --- Scroll progress bar
-    if (progressBar) {
-      gsap.to(progressBar, {
-        scaleX: 1, ease: 'none',
-        scrollTrigger: { trigger: document.documentElement, start: 'top top', end: 'bottom bottom', scrub: 0.3 },
-      });
-    }
 
     // --- Masked word reveals for headings (words only, never letters)
     gsap.utils.toArray<HTMLElement>('.split[data-reveal="words"]').forEach((el) => {

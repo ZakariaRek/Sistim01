@@ -21,7 +21,7 @@ export const en = {
     offers: 'Offers',
     process: 'Process',
     why: 'Why us',
-    work: 'Work',
+    work: "Templates",
     contact: 'Contact',
     whatsapp: 'WhatsApp',
   },
@@ -127,11 +127,45 @@ export const en = {
     ],
   },
   work: {
-    kicker: 'Work',
-    title: 'First projects in progress.',
-    intro: 'We are a new studio. Real demos will appear here as soon as they are ready.',
-    soon: 'Demo coming soon',
-    items: ['Clinic booking', 'Artisan store', 'Architect portfolio'],
+    "kicker": "Templates",
+    "title": "Pick a design, we make it yours.",
+    "intro": "Demo sites you can open and scroll like the real thing. The text and photos are placeholders: yours replace them.",
+    "badge": "Demo template",
+    "view": "View demo",
+    "items": {
+      "dentist": {
+        "title": "Dental clinic",
+        "type": "Online appointments",
+        "blurb": "Treatments, team, opening hours and a time-slot booking with WhatsApp confirmation."
+      },
+      "cars": {
+        "title": "Car rental",
+        "type": "Catalogue + WhatsApp",
+        "blurb": "A filterable fleet, rental conditions, FAQ and a WhatsApp booking button."
+      },
+      "portfolio": {
+        "title": "Interior designer",
+        "type": "Portfolio",
+        "blurb": "Selected projects with filters, services and a contact form."
+      },
+      "restaurant": {
+        "title": "Restaurant",
+        "type": "Online ordering",
+        "blurb": "The menu, an order basket, delivery or pick-up, and ordering through WhatsApp."
+      }
+    },
+    "viewer": {
+      "back": "Back to the templates",
+      "note": "Demo template: placeholder content, in French.",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "device": "Preview size",
+      "openNew": "Open in a new tab",
+      "loading": "Loading the demo…",
+      "frameTitle": "{title}: demo template",
+      "metaTitle": "{title}: demo template | Sistim",
+      "metaDescription": "Open and scroll a demo website template made by Sistim: {blurb}"
+    }
   },
   contact: {
     "kicker": "Contact",

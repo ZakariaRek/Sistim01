@@ -22,6 +22,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
+      filter: (page) => !page.includes('/templates/'),
       // hreflang alternates for every localized page, plus "/" as x-default for the home page
       serialize(item) {
         const path = new URL(item.url).pathname;

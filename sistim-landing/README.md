@@ -229,3 +229,36 @@ git push -u origin feature/3d-logo-consultation
 ```
 
 Vercel then builds a Preview Deployment for that branch and comments the URL on the pull request (or shows it under **Deployments**). In the Vercel project settings make sure **Root Directory** is `sistim-landing` and that the `SITE_URL` and `PUBLIC_CONSULTATION_ENDPOINT` variables are enabled for the **Preview** environment too. Merging into `main` is up to you.
+
+## Templates (the "Templates" section and the viewer)
+
+The landing page's "Work" section shows demo templates as cards. Clicking a card opens a viewer page at `/{lang}/templates/{slug}/` where the template runs in a full-height frame you can scroll, with a Desktop / Mobile size switch, a back button, "open in a new tab", and the free-consultation button (it preselects a matching need in the form).
+
+How it is organised:
+
+| What | Where |
+|---|---|
+| The source zips (one per template) | `../template/*.zip` (the root `template/` folder) |
+| The list of templates (slug, zip, entry file, need) | `src/config/templates.ts` |
+| Extracted templates + card previews | `public/templates/<slug>/` (generated, committed) |
+| Card and section texts, in 3 languages | `work` in `src/i18n/ar.ts`, `fr.ts`, `en.ts` |
+| The cards | `src/components/Work.astro` |
+| The viewer page | `src/pages/[lang]/templates/[slug].astro` |
+
+**Replace a template:** overwrite its zip in `template/`, then run `npm run templates`. It extracts the zip (README files are dropped), keeps the original file names (the template runtime needs them), and renders a fresh preview image for the card.
+
+**Add a template:**
+
+1. Put the zip in `template/`.
+2. Add an entry to `TEMPLATES` in `src/config/templates.ts` (`slug`, the start of the zip's file name, the page file inside it, and the `need` to preselect: `portfolio`, `booking`, `store`, `saas` or `unsure`).
+3. Add its `title`, `type` and `blurb` under `work.items.<slug>` in the three i18n files (TypeScript checks all three have the same keys).
+4. Run `npm run templates`, then `npm run build`.
+
+**Remove a template:** delete its entry in `templates.ts` and its `work.items.<slug>` texts, and delete `public/templates/<slug>/`.
+
+Notes:
+
+- The demo pages are marked `noindex` and left out of the sitemap on purpose (they only wrap a demo in a frame).
+- Links inside a demo that point to other sites (WhatsApp, Instagram, Maps) open in a new tab, because those sites refuse to be shown inside a frame.
+- The templates themselves load their Google Fonts from the internet and are written in French with placeholder content; the viewer says so.
+- `node scripts/qa-templates.mjs` (with `npm run preview` running) checks the cards, the viewer, scrolling, the mobile switch and RTL.

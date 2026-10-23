@@ -21,7 +21,7 @@ export const fr = {
     offers: 'Offres',
     process: 'Méthode',
     why: 'Pourquoi nous',
-    work: 'Projets',
+    work: "Modèles",
     contact: 'Contact',
     whatsapp: 'WhatsApp',
   },
@@ -127,11 +127,45 @@ export const fr = {
     ],
   },
   work: {
-    kicker: 'Projets',
-    title: 'Premiers projets en cours.',
-    intro: 'Nous sommes un nouveau studio. Les vraies démos apparaîtront ici dès qu’elles seront prêtes.',
-    soon: 'Démo bientôt disponible',
-    items: ['Réservation pour clinique', 'Boutique d’artisanat', 'Portfolio d’architecte'],
+    "kicker": "Modèles",
+    "title": "Choisissez un design, on le fait à votre image.",
+    "intro": "Des sites de démonstration que vous pouvez ouvrir et faire défiler comme un vrai site. Les textes et les photos sont fictifs : les vôtres les remplacent.",
+    "badge": "Modèle de démo",
+    "view": "Voir la démo",
+    "items": {
+      "dentist": {
+        "title": "Cabinet dentaire",
+        "type": "Rendez-vous en ligne",
+        "blurb": "Soins, équipe, horaires et prise de rendez-vous par créneau avec confirmation WhatsApp."
+      },
+      "cars": {
+        "title": "Location de voitures",
+        "type": "Catalogue + WhatsApp",
+        "blurb": "Une flotte filtrable, les conditions de location, une FAQ et un bouton de réservation WhatsApp."
+      },
+      "portfolio": {
+        "title": "Architecte d’intérieur",
+        "type": "Portfolio",
+        "blurb": "Projets choisis avec filtres, services et formulaire de contact."
+      },
+      "restaurant": {
+        "title": "Restaurant",
+        "type": "Commande en ligne",
+        "blurb": "La carte, un panier, livraison ou à emporter, et commande par WhatsApp."
+      }
+    },
+    "viewer": {
+      "back": "Retour aux modèles",
+      "note": "Modèle de démonstration : contenu fictif.",
+      "desktop": "Ordinateur",
+      "mobile": "Mobile",
+      "device": "Taille de l’aperçu",
+      "openNew": "Ouvrir dans un nouvel onglet",
+      "loading": "Chargement de la démo…",
+      "frameTitle": "{title} : modèle de démonstration",
+      "metaTitle": "{title} : modèle de démonstration | Sistim",
+      "metaDescription": "Ouvrez et faites défiler un modèle de site de démonstration créé par Sistim : {blurb}"
+    }
   },
   contact: {
     "kicker": "Contact",

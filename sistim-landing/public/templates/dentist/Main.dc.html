@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Cabinet dentaire Nour</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F7F6}
+a{color:#1F7A6B}a:hover{color:#10302F}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px;box-sizing:border-box}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:48px;align-items:start}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.navlinks{display:flex;gap:28px;flex-wrap:wrap}
+@media (max-width:960px){.hero,.g2{grid-template-columns:minmax(0,1fr)}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}.navlinks{display:none}}
+@media (max-width:600px){.g3{grid-template-columns:minmax(0,1fr)}.wrap{padding:0 16px}.slots{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</helmet>
+<div style="font-family: 'DM Sans', system-ui, sans-serif; color: #10302F; background: #F5F7F6; width: 100%">
+
+<!-- Bandeau -->
+<div style="background: #10302F; color: #E6F2EE; font-size: 13px">
+<div class="wrap" style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px">
+<span>Urgence dentaire ? Appelez le [NUMÉRO DU CABINET]</span>
+<span>Lun – Ven 9h00 – 19h00 · Sam 9h00 – 13h00</span>
+</div>
+</div>
+
+<!-- Navigation -->
+<header style="background: #FFFFFF; border-bottom: 1px solid #E1E9E6">
+<div class="wrap" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 18px; padding-bottom: 18px; flex-wrap: wrap">
+<a href="#top" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #10302F">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: #E3F1EC; display: flex; align-items: center; justify-content: center">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F7A6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3c-2.5 0-4 2-4 4.5 0 3 1.2 5 2 7.5.6 2 1 6 2.6 6 1.7 0 1.5-5 4.4-5s2.7 5 4.4 5c1.6 0 2-4 2.6-6 .8-2.5 2-4.5 2-7.5C21 5 19.5 3 17 3c-2 0-3 1.2-5 1.2S9 3 7 3z"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.1">
+<span style="font-family: 'Instrument Serif', serif; font-size: 26px">Nour</span>
+<span style="font-size: 12px; color: #4A5E5C; letter-spacing: .08em; text-transform: uppercase">Cabinet dentaire</span>
+</span>
+</a>
+<nav class="navlinks" aria-label="Navigation principale" style="font-size: 15px">
+<a href="#soins" style="color: #10302F; text-decoration: none">Soins</a>
+<a href="#cabinet" style="color: #10302F; text-decoration: none">Le cabinet</a>
+<a href="#equipe" style="color: #10302F; text-decoration: none">Équipe</a>
+<a href="#patient" style="color: #10302F; text-decoration: none">Espace patient</a>
+<a href="#horaires" style="color: #10302F; text-decoration: none">Horaires &amp; accès</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="font-size: 14px; color: #4A5E5C">FR · ع · EN</span>
+<a href="#rdv" style="background: #1F7A6B; color: #FFFFFF; text-decoration: none; padding: 13px 20px; border-radius: 999px; font-weight: 600; font-size: 15px">Prendre rendez-vous</a>
+</div>
+</div>
+</header>
+
+<!-- Hero + prise de RDV -->
+<section id="top" style="padding: 64px 0 80px">
+<div class="wrap hero">
+<div style="display: flex; flex-direction: column; gap: 28px">
+<span style="align-self: flex-start; background: #E3F1EC; color: #1F5F54; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600">Rendez-vous en ligne · 7j/7, 24h/24</span>
+<h1 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(44px, 6vw, 76px); line-height: 1; letter-spacing: -0.01em">Un sourire soigné,<br><em style="color: #1F7A6B">un rendez-vous</em> en deux minutes.</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #4A5E5C; max-width: 540px">Choisissez votre soin, votre jour et votre heure. Vous recevez la confirmation sur WhatsApp, puis un rappel la veille. Fini l'attente au téléphone.</p>
+<div style="display: flex; gap: 12px; flex-wrap: wrap">
+<a href="#rdv" style="background: #10302F; color: #FFFFFF; text-decoration: none; padding: 16px 24px; border-radius: 999px; font-weight: 600">Réserver maintenant</a>
+<a href="https://wa.me/" style="display: flex; align-items: center; gap: 10px; border: 1px solid #C3D6D0; color: #10302F; text-decoration: none; padding: 15px 22px; border-radius: 999px; font-weight: 600; background: #FFFFFF">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F7A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"></path></svg>
+Écrire sur WhatsApp</a>
+</div>
+<div role="img" aria-label="Photo : salle de soins lumineuse avec fauteuil dentaire" style="margin-top: 8px; height: 340px; border-radius: 28px; background: #D5E6E0; position: relative; display: flex; align-items: flex-end; padding: 20px; box-sizing: border-box; overflow: hidden">
+<svg width="100%" height="100%" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0"><rect x="380" y="40" width="170" height="210" rx="10" fill="#E8F2EE"></rect><rect x="392" y="52" width="70" height="186" fill="#F4FAF7"></rect><rect x="474" y="52" width="64" height="186" fill="#F4FAF7"></rect><path d="M90 260 C 140 200, 230 190, 300 205 L 330 260 Z" fill="#BCD6CD"></path><rect x="250" y="258" width="20" height="50" fill="#9FC1B5"></rect><circle cx="210" cy="110" r="34" fill="#F4FAF7" stroke="#BCD6CD" stroke-width="6"></circle><path d="M210 144 L 220 200" stroke="#BCD6CD" stroke-width="6"></path></svg>
+<span style="position: relative; background: rgba(255,255,255,.9); padding: 8px 12px; border-radius: 10px; font-size: 12px; color: #2E4644; font-weight: 600">PHOTO · Salle de soins, lumière naturelle</span>
+</div>
+</div>
+
+<!-- Carte de réservation -->
+<div id="rdv" style="background: #FFFFFF; border-radius: 28px; padding: 28px; box-shadow: 0 1px 0 #E1E9E6, 0 24px 60px rgba(16,48,47,.08); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 22px">Prendre rendez-vous</h2>
+<span style="font-size: 13px; color: #4A5E5C">3 étapes</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 700; color: #4A5E5C; letter-spacing: .06em; text-transform: uppercase">1 · Le soin</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{services}}" as="s" hint-placeholder-count="5">
+<button type="button" style="{{s.style}}" onClick="{{s.pick}}">{{s.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 700; color: #4A5E5C; letter-spacing: .06em; text-transform: uppercase">2 · Le jour</span>
+<div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="6">
+<button type="button" style="{{d.style}}" onClick="{{d.pick}}"><span style="font-size: 12px; display: block">{{d.wd}}</span><span style="font-size: 20px; font-weight: 700; display: block">{{d.num}}</span><span style="font-size: 12px; display: block">{{d.mo}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 700; color: #4A5E5C; letter-spacing: .06em; text-transform: uppercase">3 · L'heure</span>
+<div class="slots">
+<sc-for list="{{slots}}" as="t" hint-placeholder-count="12">
+<button type="button" style="{{t.style}}" onClick="{{t.pick}}" disabled="{{t.off}}" aria-label="{{t.aria}}">{{t.t}}</button>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #4A5E5C">Les créneaux barrés sont déjà réservés.</span>
+</div>
+
+<div style="background: #F0F6F4; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #4A5E5C; text-transform: uppercase; letter-spacing: .06em; font-weight: 700">Votre rendez-vous</span>
+<span style="font-size: 17px; font-weight: 600">{{summary}}</span>
+<span style="font-size: 13px; color: #4A5E5C">Durée estimée : {{duration}}</span>
+</div>
+
+<sc-if value="{{notConfirmed}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Nom complet
+<input type="text" placeholder="Ex. : Salma B." style="font: inherit; font-weight: 400; font-size: 15px; padding: 13px 14px; border: 1px solid #C9DAD5; border-radius: 12px; background: #FFFFFF; color: #10302F">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Numéro WhatsApp
+<input type="tel" placeholder="06 00 00 00 00" style="font: inherit; font-weight: 400; font-size: 15px; padding: 13px 14px; border: 1px solid #C9DAD5; border-radius: 12px; background: #FFFFFF; color: #10302F">
+</label>
+<button type="button" onClick="{{confirm}}" style="margin-top: 6px; background: #1F7A6B; color: #FFFFFF; border: 0; border-radius: 999px; padding: 16px 20px; font: 600 16px/1 'DM Sans', sans-serif; cursor: pointer; min-height: 52px">Confirmer le rendez-vous</button>
+</div>
+</sc-if>
+<sc-if value="{{confirmed}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 14px; align-items: flex-start; background: #10302F; color: #FFFFFF; border-radius: 18px; padding: 18px">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7FD1B9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<strong style="font-size: 16px">Demande envoyée</strong>
+<span style="font-size: 14px; color: #CFE3DD; line-height: 1.5">Le cabinet vous confirme sur WhatsApp. Rappel automatique la veille à 18h.</span>
+<button type="button" onClick="{{reset}}" style="align-self: flex-start; margin-top: 6px; background: transparent; color: #7FD1B9; border: 0; padding: 8px 0; font: 600 14px/1 'DM Sans', sans-serif; cursor: pointer; min-height: 44px">Modifier</button>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</section>
+
+<!-- Soins -->
+<section id="soins" style="padding: 80px 0; background: #FFFFFF">
+<div class="wrap" style="display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 620px">
+<span style="font-size: 13px; font-weight: 700; color: #1F7A6B; letter-spacing: .08em; text-transform: uppercase">Nos soins</span>
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 52px; line-height: 1.05">Du simple contrôle aux soins avancés.</h2>
+</div>
+<p style="margin: 0; color: #4A5E5C; max-width: 380px; line-height: 1.6">Chaque soin affiche sa durée. Les traitements longs commencent par une consultation et un devis clair.</p>
+</div>
+<div class="g3">
+<sc-for list="{{care}}" as="c" hint-placeholder-count="6">
+<article style="border: 1px solid #E1E9E6; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; background: #FBFDFC">
+<span style="width: 48px; height: 48px; border-radius: 14px; background: #E3F1EC; color: #1F7A6B; display: flex; align-items: center; justify-content: center; font-family: 'Instrument Serif', serif; font-size: 24px">{{c.n}}</span>
+<h3 style="margin: 0; font-size: 20px">{{c.title}}</h3>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.55; font-size: 15px">{{c.text}}</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid #E1E9E6">
+<span style="font-size: 14px; color: #4A5E5C">{{c.dur}}</span>
+<a href="#rdv" style="font-weight: 600; font-size: 14px; text-decoration: none">Réserver →</a>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- Comment ça marche -->
+<section style="padding: 80px 0">
+<div class="wrap" style="display: flex; flex-direction: column; gap: 36px">
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 48px">Comment ça marche</h2>
+<div class="g3">
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 2px solid #10302F; padding-top: 20px">
+<span style="font-size: 14px; color: #1F7A6B; font-weight: 700">01</span>
+<h3 style="margin: 0; font-size: 20px">Vous réservez en ligne</h3>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.6">Les créneaux affichés sont les vraies disponibilités de l'agenda du cabinet.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 2px solid #10302F; padding-top: 20px">
+<span style="font-size: 14px; color: #1F7A6B; font-weight: 700">02</span>
+<h3 style="margin: 0; font-size: 20px">Confirmation WhatsApp</h3>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.6">Un message de confirmation, puis un rappel la veille. Vous pouvez déplacer ou annuler en un clic.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 2px solid #10302F; padding-top: 20px">
+<span style="font-size: 14px; color: #1F7A6B; font-weight: 700">03</span>
+<h3 style="margin: 0; font-size: 20px">Vous êtes reçu à l'heure</h3>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.6">Le cabinet prépare votre dossier à l'avance. Moins d'attente en salle.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Le cabinet -->
+<section id="cabinet" style="padding: 80px 0; background: #FFFFFF">
+<div class="wrap" style="display: flex; flex-direction: column; gap: 36px">
+<div class="g2" style="align-items: end">
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 52px; line-height: 1.05">Un cabinet pensé pour votre confort.</h2>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.7; font-size: 17px">[Présentation du cabinet : équipements, hygiène et stérilisation, accueil des enfants, accessibilité. Texte fourni par le praticien.]</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<div role="img" aria-label="Photo : accueil du cabinet" style="height: 300px; border-radius: 24px; background: #E2ECE8; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box"><span style="background: rgba(255,255,255,.9); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #2E4644">PHOTO · Accueil &amp; salle d'attente</span></div>
+<div role="img" aria-label="Photo : salle de soins" style="height: 300px; border-radius: 24px; background: #CFE2DB; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box"><span style="background: rgba(255,255,255,.9); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #2E4644">PHOTO · Fauteuil &amp; équipement</span></div>
+<div role="img" aria-label="Photo : zone de stérilisation" style="height: 300px; border-radius: 24px; background: #DCE7E3; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box"><span style="background: rgba(255,255,255,.9); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #2E4644">PHOTO · Stérilisation</span></div>
+</div>
+</div>
+</section>
+
+<!-- Équipe -->
+<section id="equipe" style="padding: 80px 0">
+<div class="wrap" style="display: flex; flex-direction: column; gap: 36px">
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 48px">L'équipe</h2>
+<div class="g2">
+<article style="display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; background: #FFFFFF; border-radius: 24px; padding: 20px; align-items: center">
+<div role="img" aria-label="Portrait du praticien" style="height: 200px; border-radius: 18px; background: #D5E6E0; display: flex; align-items: center; justify-content: center"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#7FA79A" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-size: 22px">Dr [Prénom Nom]</h3>
+<span style="color: #1F7A6B; font-weight: 600; font-size: 14px">Chirurgien-dentiste · Omnipratique</span>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.6; font-size: 15px">[Parcours, diplômes et spécialités du praticien.]</p>
+</div>
+</article>
+<article style="display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; background: #FFFFFF; border-radius: 24px; padding: 20px; align-items: center">
+<div role="img" aria-label="Portrait de l'assistante" style="height: 200px; border-radius: 18px; background: #DDE9E4; display: flex; align-items: center; justify-content: center"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#7FA79A" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-size: 22px">[Prénom Nom]</h3>
+<span style="color: #1F7A6B; font-weight: 600; font-size: 14px">Assistante dentaire · Accueil</span>
+<p style="margin: 0; color: #4A5E5C; line-height: 1.6; font-size: 15px">Gère les rendez-vous, les rappels et les questions sur WhatsApp.</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<!-- Espace patient + côté cabinet -->
+<section id="patient" style="padding: 80px 0; background: #10302F; color: #FFFFFF">
+<div class="wrap" style="display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 720px">
+<span style="font-size: 13px; font-weight: 700; color: #7FD1B9; letter-spacing: .08em; text-transform: uppercase">L'application derrière le site</span>
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 52px; line-height: 1.05">Le patient gère son rendez-vous. Le cabinet gère sa journée.</h2>
+</div>
+<div class="g2" style="align-items: start">
+
+<!-- Patient -->
+<div style="background: #17403F; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-size: 13px; color: #A9CEC3; font-weight: 600">Espace patient</span>
+<div style="background: #FFFFFF; color: #10302F; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+<strong style="font-size: 17px">Détartrage &amp; polissage</strong>
+<span style="background: #E3F1EC; color: #1F5F54; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700">Confirmé</span>
+</div>
+<span style="color: #4A5E5C; font-size: 15px">Mardi 27 octobre · 10:30 · Dr [Nom]</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" style="border: 1px solid #C9DAD5; background: #FFFFFF; color: #10302F; border-radius: 999px; padding: 10px 16px; font: 600 14px/1 'DM Sans', sans-serif; min-height: 44px">Déplacer</button>
+<button type="button" style="border: 1px solid #C9DAD5; background: #FFFFFF; color: #10302F; border-radius: 999px; padding: 10px 16px; font: 600 14px/1 'DM Sans', sans-serif; min-height: 44px">Annuler</button>
+<button type="button" style="border: 0; background: #10302F; color: #FFFFFF; border-radius: 999px; padding: 10px 16px; font: 600 14px/1 'DM Sans', sans-serif; min-height: 44px">Ajouter au calendrier</button>
+</div>
+</div>
+<div style="background: #0F2E2D; border-radius: 18px; padding: 18px; display: flex; gap: 12px; align-items: flex-start">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7FD1B9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"></path></svg>
+<span style="font-size: 14px; line-height: 1.55; color: #D6E8E2">« Bonjour, rappel de votre rendez-vous demain à 10:30 au cabinet Nour. Répondez 1 pour confirmer, 2 pour déplacer. »</span>
+</div>
+</div>
+
+<!-- Cabinet -->
+<div style="background: #FFFFFF; color: #10302F; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<strong style="font-size: 17px">Agenda · Mardi 27 octobre</strong>
+<span style="font-size: 13px; color: #4A5E5C">Tableau de bord du cabinet</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div style="background: #F0F6F4; border-radius: 14px; padding: 14px"><span style="font-size: 12px; color: #4A5E5C; display: block">Rendez-vous</span><strong style="font-size: 24px">{{agendaCount}}</strong></div>
+<div style="background: #F0F6F4; border-radius: 14px; padding: 14px"><span style="font-size: 12px; color: #4A5E5C; display: block">Confirmés</span><strong style="font-size: 24px">{{agendaConfirmed}}</strong></div>
+<div style="background: #F0F6F4; border-radius: 14px; padding: 14px"><span style="font-size: 12px; color: #4A5E5C; display: block">En attente</span><strong style="font-size: 24px">{{agendaPending}}</strong></div>
+</div>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{agenda}}" as="a" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid #E1E9E6">
+<span style="font-weight: 700; font-size: 15px">{{a.t}}</span>
+<span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">{{a.p}}</span><span style="font-size: 13px; color: #4A5E5C">{{a.c}}</span></span>
+<span style="{{a.badge}}">{{a.s}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Horaires & accès -->
+<section id="horaires" style="padding: 80px 0">
+<div class="wrap g2" style="align-items: stretch">
+<div style="display: flex; flex-direction: column; gap: 24px">
+<h2 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 48px">Horaires &amp; accès</h2>
+<div style="background: #FFFFFF; border-radius: 24px; padding: 8px 24px">
+<div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #E1E9E6"><span>Lundi – Vendredi</span><strong>9h00 – 19h00</strong></div>
+<div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #E1E9E6"><span>Samedi</span><strong>9h00 – 13h00</strong></div>
+<div style="display: flex; justify-content: space-between; padding: 14px 0"><span>Dimanche</span><strong style="color: #4A5E5C">Fermé</strong></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; color: #4A5E5C; line-height: 1.6">
+<span>[Adresse complète du cabinet]</span>
+<span>[Téléphone] · [Email]</span>
+</div>
+<div style="display: flex; gap: 12px; flex-wrap: wrap">
+<a href="#rdv" style="background: #1F7A6B; color: #FFFFFF; text-decoration: none; padding: 15px 22px; border-radius: 999px; font-weight: 600">Prendre rendez-vous</a>
+<a href="https://maps.google.com" style="border: 1px solid #C3D6D0; background: #FFFFFF; color: #10302F; text-decoration: none; padding: 14px 22px; border-radius: 999px; font-weight: 600">Itinéraire</a>
+</div>
+</div>
+<div role="img" aria-label="Carte de localisation du cabinet" style="min-height: 380px; border-radius: 28px; background: #DCE7E3; position: relative; overflow: hidden">
+<svg width="100%" height="100%" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0"><path d="M0 120 L600 80 M0 260 L600 300 M150 0 L210 400 M420 0 L380 400" stroke="#FFFFFF" stroke-width="18"></path><path d="M0 190 L600 200" stroke="#F5F9F7" stroke-width="8"></path><rect x="230" y="130" width="120" height="90" rx="8" fill="#C9DDD5"></rect><circle cx="300" cy="190" r="20" fill="#1F7A6B"></circle><circle cx="300" cy="190" r="7" fill="#FFFFFF"></circle></svg>
+<span style="position: absolute; left: 20px; bottom: 20px; background: rgba(255,255,255,.92); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #2E4644">CARTE · Google Maps intégrée</span>
+</div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer style="background: #FFFFFF; border-top: 1px solid #E1E9E6">
+<div class="wrap" style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 28px; padding-bottom: 28px; font-size: 14px; color: #4A5E5C">
+<span>© Cabinet dentaire Nour · Mentions légales · Confidentialité</span>
+<span>Site &amp; application réalisés par <strong style="color: #10302F">SISTIM</strong></span>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { service: 'det', day: 1, time: '10:30', confirmed: false };
+  }
+  renderVals() {
+    var st = this.state;
+    var self = this;
+    var chip = 'padding: 10px 14px; border-radius: 999px; font: 500 14px/1.2 \'DM Sans\', sans-serif; cursor: pointer; min-height: 44px; ';
+    var on = 'background: #10302F; color: #FFFFFF; border: 1px solid #10302F; ';
+    var off = 'background: #FFFFFF; color: #10302F; border: 1px solid #C9DAD5; ';
+    var SV = [
+      { id: 'cons', label: 'Consultation', dur: '30 min' },
+      { id: 'det', label: 'Détartrage', dur: '45 min' },
+      { id: 'car', label: 'Soin carie', dur: '45 min' },
+      { id: 'bla', label: 'Blanchiment', dur: '60 min' },
+      { id: 'urg', label: 'Urgence', dur: '30 min' }
+    ];
+    var services = SV.map(function (s) {
+      return { label: s.label, style: chip + (st.service === s.id ? on : off), pick: function () { self.setState({ service: s.id, confirmed: false }); } };
+    });
+    var DY = [
+      { wd: 'Lun', num: '26', mo: 'oct' }, { wd: 'Mar', num: '27', mo: 'oct' }, { wd: 'Mer', num: '28', mo: 'oct' },
+      { wd: 'Jeu', num: '29', mo: 'oct' }, { wd: 'Ven', num: '30', mo: 'oct' }, { wd: 'Sam', num: '31', mo: 'oct' }
+    ];
+    var FULL = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    var dayBase = 'flex: 0 0 auto; width: 68px; padding: 10px 0; border-radius: 16px; text-align: center; cursor: pointer; font-family: \'DM Sans\', sans-serif; line-height: 1.25; ';
+    var days = DY.map(function (d, i) {
+      return { wd: d.wd, num: d.num, mo: d.mo, style: dayBase + (st.day === i ? on : off), pick: function () { self.setState({ day: i, confirmed: false }); } };
+    });
+    var T = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '16:00', '17:00', '18:00'];
+    if (st.day === 5) T = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30'];
+    var slotBase = 'padding: 12px 0; border-radius: 12px; font: 600 14px/1 \'DM Sans\', sans-serif; min-height: 44px; ';
+    var slots = T.map(function (t, i) {
+      var taken = ((i * 7 + st.day * 3) % 5) === 0 && t !== st.time;
+      var sel = st.time === t;
+      var s = slotBase + (taken ? 'background: #EEF2F1; color: #6B7C79; border: 1px solid #EEF2F1; text-decoration: line-through; cursor: not-allowed; ' : sel ? on + 'cursor: pointer; ' : off + 'cursor: pointer; ');
+      return { t: t, off: taken, aria: taken ? t + ' indisponible' : t, style: s, pick: function () { if (!taken) self.setState({ time: t, confirmed: false }); } };
+    });
+    var cur = SV.filter(function (s) { return s.id === st.service; })[0] || SV[0];
+    var d = DY[st.day];
+    var AG = [
+      { t: '09:00', p: 'M. B.', c: 'Consultation · Dr [Nom]', s: 'Confirmé' },
+      { t: '09:30', p: 'S. A.', c: 'Soin carie', s: 'Confirmé' },
+      { t: '10:30', p: 'Vous', c: cur.label, s: st.confirmed ? 'Confirmé' : 'En attente' },
+      { t: '11:30', p: 'Y. E.', c: 'Blanchiment', s: 'En attente' },
+      { t: '14:00', p: 'N. K.', c: 'Détartrage', s: 'Confirmé' }
+    ];
+    var agenda = AG.map(function (a) {
+      var ok = a.s === 'Confirmé';
+      return { t: a.t, p: a.p, c: a.c, s: a.s, badge: 'padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; ' + (ok ? 'background: #E3F1EC; color: #1F5F54;' : 'background: #FFF1D6; color: #7A4D00;') };
+    });
+    var conf = AG.filter(function (a) { return a.s === 'Confirmé'; }).length;
+    var care = [
+      { n: '01', title: 'Consultation & bilan', text: 'Examen complet, radio si besoin et plan de traitement expliqué simplement.', dur: '30 min' },
+      { n: '02', title: 'Détartrage & polissage', text: 'Nettoyage en profondeur pour des gencives saines et des dents plus claires.', dur: '45 min' },
+      { n: '03', title: 'Soins des caries', text: 'Traitement des caries avec des matériaux de la couleur de la dent.', dur: '45 min' },
+      { n: '04', title: 'Blanchiment', text: 'Éclaircissement encadré par le praticien, au cabinet ou à domicile.', dur: '60 min' },
+      { n: '05', title: 'Implants dentaires', text: 'Remplacement durable d\'une ou plusieurs dents, après bilan complet.', dur: 'Sur devis' },
+      { n: '06', title: 'Orthodontie & aligneurs', text: 'Correction de l\'alignement pour adolescents et adultes.', dur: 'Sur devis' }
+    ];
+    return {
+      services: services, days: days, slots: slots, care: care, agenda: agenda,
+      agendaCount: String(AG.length), agendaConfirmed: String(conf), agendaPending: String(AG.length - conf),
+      summary: cur.label + ' · ' + FULL[st.day] + ' ' + d.num + ' ' + d.mo + ' · ' + st.time,
+      duration: cur.dur,
+      confirmed: st.confirmed, notConfirmed: !st.confirmed,
+      confirm: function () { self.setState({ confirmed: true }); },
+      reset: function () { self.setState({ confirmed: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

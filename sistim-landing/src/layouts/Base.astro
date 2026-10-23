@@ -12,8 +12,10 @@ interface Props {
   description?: string;
   /** Landing page only: enables the motion gating class before first paint. */
   motion?: boolean;
+  /** e.g. "noindex,follow" for pages that should stay out of search results. */
+  robots?: string;
 }
-const { locale, page = '', title, description, motion = false } = Astro.props;
+const { locale, page = '', title, description, motion = false, robots } = Astro.props;
 const meta = LOCALE_META[locale];
 const d = t(locale);
 const pageTitle = title ?? d.meta.title;
@@ -47,6 +49,7 @@ const preloads = locale === 'ar'
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" href={canonical} />
     {LOCALES.map((l) => <link rel="alternate" hreflang={LOCALE_META[l].lang} href={`${SITE_URL}${localePath(l, page)}`} />)}
     {page === '' && <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/`} />}

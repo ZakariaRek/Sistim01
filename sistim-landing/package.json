@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "brand": "node scripts/brand-assets.mjs"
+    "brand": "node scripts/brand-assets.mjs",
+    "templates": "node scripts/import-templates.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.1",
@@ -28,6 +29,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
+    "adm-zip": "^0.6.1",
     "lighthouse": "^13.5.0",
     "playwright": "^1.64.0",
     "potrace": "^2.1.8",

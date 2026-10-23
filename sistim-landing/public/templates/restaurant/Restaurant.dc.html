@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Dar Zitoun, commande en ligne</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBF4E9}
+a{color:#8C2F1B}a:hover{color:#2A1F14}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px;box-sizing:border-box}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center}
+.shop{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.menu{flex:999 1 620px;min-width:0;display:flex;flex-direction:column;gap:24px}
+.cart{flex:1 1 340px;min-width:0}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.hero,.info{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.wrap{padding:0 16px}}
+</style>
+</helmet>
+<div style="font-family: 'Manrope', system-ui, sans-serif; color: #2A1F14; background: #FBF4E9; width: 100%">
+
+<!-- Nav -->
+<header style="border-bottom: 1px solid #EBDDC6">
+<div class="wrap" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 18px; padding-bottom: 18px">
+<a href="#top" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #2A1F14">
+<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M6 26 Q20 4 34 26 Z" fill="#8C2F1B"></path><rect x="4" y="26" width="32" height="5" rx="2.5" fill="#3E4A2B"></rect><circle cx="20" cy="9" r="2.5" fill="#E0A526"></circle></svg>
+<span style="font-family: 'Young Serif', serif; font-size: 26px">Dar Zitoun</span>
+</a>
+<nav style="display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; font-weight: 600" aria-label="Navigation">
+<a href="#menu" style="color: #2A1F14; text-decoration: none">La carte</a>
+<a href="#infos" style="color: #2A1F14; text-decoration: none">Livraison &amp; horaires</a>
+<a href="#infos" style="color: #2A1F14; text-decoration: none">Réserver une table</a>
+</nav>
+<a href="#panier" style="display: flex; align-items: center; gap: 10px; background: #2A1F14; color: #FBF4E9; text-decoration: none; padding: 12px 18px; border-radius: 999px; font-weight: 700">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.5 12h-11z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg>
+Panier · {{count}}</a>
+</div>
+</header>
+
+<!-- Hero -->
+<section id="top" style="padding: 56px 0 64px">
+<div class="wrap hero">
+<div style="display: flex; flex-direction: column; gap: 24px">
+<span style="align-self: flex-start; background: #F3E3C2; color: #6A4A10; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 700">Cuisine marocaine faite maison</span>
+<h1 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: clamp(44px, 5.6vw, 72px); line-height: 1.02; letter-spacing: -0.01em">Le goût de la maison, <span style="color: #8C2F1B">livré encore chaud.</span></h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #5B4A38; max-width: 500px">Commandez sur la carte, payez à la livraison ou par carte, suivez votre commande en direct.</p>
+<div style="background: #FFFFFF; border-radius: 20px; padding: 8px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 16px 40px rgba(42,31,20,.08); max-width: 520px">
+<div style="display: flex; gap: 6px; background: #F6EEDF; border-radius: 14px; padding: 4px" role="group" aria-label="Mode de commande">
+<button type="button" style="{{modeLiv}}" onClick="{{setLiv}}">Livraison</button>
+<button type="button" style="{{modeEmp}}" onClick="{{setEmp}}">À emporter</button>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<label style="flex: 1 1 240px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border: 1px solid #EBDDC6; border-radius: 14px; min-height: 52px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C2F1B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Adresse</span>
+<input type="text" placeholder="{{addrPh}}" style="border: 0; outline: 0; font: 500 15px 'Manrope', sans-serif; flex: 1; min-width: 0; background: transparent; color: #2A1F14">
+</label>
+<a href="#menu" style="background: #8C2F1B; color: #FFFFFF; text-decoration: none; border-radius: 14px; padding: 0 22px; display: flex; align-items: center; font-weight: 700; min-height: 52px">Voir la carte</a>
+</div>
+</div>
+<span style="font-size: 14px; color: #5B4A38">{{eta}}</span>
+</div>
+<div style="position: relative">
+<div role="img" aria-label="Photo : tajine de poulet au citron confit et olives, vue de dessus" style="height: 480px; border-radius: 32px; background: #C98B4A; position: relative; overflow: hidden">
+<svg width="100%" height="100%" viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0"><rect width="600" height="480" fill="#B9733A"></rect><circle cx="300" cy="250" r="190" fill="#8C4A22"></circle><circle cx="300" cy="250" r="160" fill="#D9A15B"></circle><circle cx="250" cy="220" r="28" fill="#E8C24A"></circle><circle cx="350" cy="280" r="22" fill="#E8C24A"></circle><circle cx="320" cy="200" r="10" fill="#4B5B2C"></circle><circle cx="270" cy="300" r="10" fill="#4B5B2C"></circle><circle cx="360" cy="230" r="10" fill="#4B5B2C"></circle></svg>
+<span style="position: absolute; left: 20px; bottom: 20px; background: rgba(251,244,233,.93); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700">PHOTO · Tajine poulet citron confit, vue de dessus</span>
+</div>
+<div style="position: absolute; right: -8px; top: 28px; background: #FFFFFF; border-radius: 18px; padding: 14px 16px; box-shadow: 0 16px 40px rgba(42,31,20,.14); display: flex; gap: 12px; align-items: center">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #EAF0DF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3E4A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+<span style="display: flex; flex-direction: column"><strong style="font-size: 14px">Ouvert maintenant</strong><span style="font-size: 13px; color: #5B4A38">Jusqu'à 23h00</span></span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Carte + panier -->
+<section id="menu" style="padding: 24px 0 80px">
+<div class="wrap shop">
+<div class="menu">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap">
+<h2 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: 48px">La carte</h2>
+<span style="font-size: 13px; color: #5B4A38">Prix d'exemple · remplacés par la carte du restaurant</span>
+</div>
+<div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px" role="group" aria-label="Catégories">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="6">
+<button type="button" style="{{c.style}}" onClick="{{c.pick}}">{{c.label}}</button>
+</sc-for>
+</div>
+<div class="items">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="6">
+<article style="background: #FFFFFF; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #F0E4D0">
+<div role="img" aria-label="{{it.alt}}" style="{{it.img}}">
+<sc-if value="{{it.hasTag}}" hint-placeholder-val="{{ true }}"><span style="position: absolute; left: 12px; top: 12px; background: #FBF4E9; color: #2A1F14; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700">{{it.tag}}</span></sc-if>
+<span style="position: absolute; right: 12px; bottom: 12px; color: #FFFFFF; font-size: 11px; font-weight: 700; letter-spacing: .06em; background: rgba(42,31,20,.55); padding: 4px 8px; border-radius: 6px">PHOTO</span>
+</div>
+<div style="padding: 18px; display: flex; flex-direction: column; gap: 8px; flex: 1">
+<h3 style="margin: 0; font-size: 18px; font-weight: 800">{{it.name}}</h3>
+<p style="margin: 0; color: #5B4A38; font-size: 14px; line-height: 1.5">{{it.desc}}</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px">
+<strong style="font-size: 18px">{{it.price}} MAD</strong>
+<sc-if value="{{it.none}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{it.add}}" style="background: #2A1F14; color: #FBF4E9; border: 0; border-radius: 999px; padding: 0 16px; min-height: 44px; font: 700 14px/1 'Manrope', sans-serif; cursor: pointer">+ Ajouter</button>
+</sc-if>
+<sc-if value="{{it.some}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 4px; background: #F6EEDF; border-radius: 999px; padding: 4px">
+<button type="button" onClick="{{it.dec}}" aria-label="Retirer un" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #FFFFFF; font: 800 18px/1 'Manrope', sans-serif; cursor: pointer; color: #2A1F14">−</button>
+<span style="min-width: 24px; text-align: center; font-weight: 800">{{it.qty}}</span>
+<button type="button" onClick="{{it.add}}" aria-label="Ajouter un" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #2A1F14; color: #FBF4E9; font: 800 18px/1 'Manrope', sans-serif; cursor: pointer">+</button>
+</div>
+</sc-if>
+</div>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+
+<!-- Panier -->
+<aside id="panier" class="cart" style="background: #FFFFFF; border-radius: 26px; padding: 24px; display: flex; flex-direction: column; gap: 18px; border: 1px solid #F0E4D0; box-sizing: border-box">
+<sc-if value="{{notPlaced}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 22px; font-weight: 800">Votre commande</h2>
+<span style="font-size: 13px; color: #5B4A38">{{modeLabel}}</span>
+</div>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="background: #FBF4E9; border-radius: 16px; padding: 24px; text-align: center; color: #5B4A38; font-size: 15px">Votre panier est vide. Ajoutez un plat depuis la carte.</div>
+</sc-if>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="2">
+<div style="display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0E4D0">
+<span style="width: 28px; height: 28px; border-radius: 8px; background: #F6EEDF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">{{l.qty}}</span>
+<span style="font-size: 15px; font-weight: 600">{{l.name}}</span>
+<span style="font-size: 15px; font-weight: 700">{{l.total}} MAD</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<div style="display: flex; justify-content: space-between"><span style="color: #5B4A38">Sous-total</span><span>{{sub}} MAD</span></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5B4A38">Livraison</span><span>{{fee}}</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; padding-top: 8px; border-top: 1px dashed #E3D3B8"><span>Total</span><span>{{total}} MAD</span></div>
+</div>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="font-size: 13px; font-weight: 700; color: #5B4A38; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em">Paiement</legend>
+<button type="button" style="{{payCash}}" onClick="{{setCash}}">Espèces à la livraison</button>
+<button type="button" style="{{payCard}}" onClick="{{setCard}}">Carte bancaire en ligne</button>
+</fieldset>
+<button type="button" onClick="{{place}}" disabled="{{empty}}" style="{{placeStyle}}">Valider la commande · {{total}} MAD</button>
+<a href="https://wa.me/" style="display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid #3E4A2B; color: #3E4A2B; text-decoration: none; border-radius: 16px; min-height: 50px; font-weight: 700">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"></path></svg>
+Commander via WhatsApp</a>
+</div>
+</sc-if>
+<sc-if value="{{placed}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<span style="font-size: 13px; font-weight: 700; color: #3E4A2B; text-transform: uppercase; letter-spacing: .06em">Commande n° 1042</span>
+<h2 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: 30px; line-height: 1.1">Merci ! Votre commande est en cuisine.</h2>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 12px; align-items: center"><span style="width: 28px; height: 28px; border-radius: 50%; background: #3E4A2B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">✓</span><span style="font-weight: 600">Commande reçue</span></li>
+<li style="display: flex; gap: 12px; align-items: center"><span style="width: 28px; height: 28px; border-radius: 50%; background: #E0A526; color: #2A1F14; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">2</span><span style="font-weight: 600">En préparation</span></li>
+<li style="display: flex; gap: 12px; align-items: center; color: #8A7660"><span style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #E3D3B8; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; box-sizing: border-box">3</span><span style="font-weight: 600">{{lastStep}}</span></li>
+</ol>
+<span style="font-size: 14px; color: #5B4A38; line-height: 1.5">Un message de suivi est envoyé sur WhatsApp. Total : {{total}} MAD · {{payLabel}}.</span>
+<button type="button" onClick="{{again}}" style="background: #F6EEDF; color: #2A1F14; border: 0; border-radius: 16px; min-height: 50px; font: 700 15px/1 'Manrope', sans-serif; cursor: pointer">Nouvelle commande</button>
+</div>
+</sc-if>
+</aside>
+</div>
+</section>
+
+<!-- Infos -->
+<section id="infos" style="padding: 72px 0; background: #3E4A2B; color: #F4EEDC">
+<div class="wrap info">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: 26px">Horaires</h3>
+<span style="line-height: 1.7; color: #DCD6BF">Tous les jours · 12h00 – 23h00<br>Livraison jusqu'à 22h30</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: 26px">Zone de livraison</h3>
+<span style="line-height: 1.7; color: #DCD6BF">[Quartiers desservis]<br>Commande minimum : [montant] MAD</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Young Serif', serif; font-weight: 400; font-size: 26px">Sur place</h3>
+<span style="line-height: 1.7; color: #DCD6BF">[Adresse du restaurant]<br>Réservation de table : [téléphone]</span>
+</div>
+</div>
+</section>
+
+<footer class="wrap" style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 24px; padding-bottom: 24px; font-size: 14px; color: #5B4A38">
+<span>© Dar Zitoun · Allergènes &amp; mentions légales</span>
+<span>Commande en ligne réalisée par <strong style="color: #2A1F14">SISTIM</strong></span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cat: 'all', cart: { tajine: 1, the: 2 }, mode: 'liv', pay: 'cash', placed: false };
+  }
+  renderVals() {
+    var st = this.state, self = this;
+    var MENU = [
+      { id: 'harira', cat: 'ent', name: 'Harira maison', desc: 'Soupe de tomates, lentilles et pois chiches, dattes à part.', price: 25, tag: 'Végétarien', bg: '#B5552B' },
+      { id: 'zaalouk', cat: 'ent', name: 'Zaalouk & pain khobz', desc: 'Caviar d\'aubergines fumées, cumin et coriandre.', price: 30, tag: 'Végétarien', bg: '#7D5A2E' },
+      { id: 'briouates', cat: 'ent', name: 'Briouates au fromage', desc: 'Six feuilletés croustillants, herbes fraîches.', price: 35, tag: '', bg: '#D3A256' },
+      { id: 'tajine', cat: 'plat', name: 'Tajine poulet citron confit', desc: 'Poulet fermier, olives violettes, citron confit maison.', price: 75, tag: 'Le plus commandé', bg: '#C98B4A' },
+      { id: 'couscous', cat: 'plat', name: 'Couscous sept légumes', desc: 'Semoule roulée à la main, bouillon parfumé. Le vendredi.', price: 70, tag: '', bg: '#D8B86A' },
+      { id: 'tanjia', cat: 'plat', name: 'Tanjia de veau', desc: 'Cuisson lente au cumin et au smen, servie avec pain.', price: 95, tag: 'Épicé', bg: '#6E3A20' },
+      { id: 'pastilla', cat: 'plat', name: 'Pastilla au poulet', desc: 'Feuilles croustillantes, amandes, cannelle et sucre glace.', price: 85, tag: '', bg: '#C9A06A' },
+      { id: 'kefta', cat: 'gril', name: 'Brochettes de kefta', desc: 'Bœuf haché aux épices, frites maison et salade.', price: 65, tag: '', bg: '#8E4426' },
+      { id: 'chebakia', cat: 'des', name: 'Chebakia & sellou', desc: 'Douceurs au miel et au sésame.', price: 25, tag: '', bg: '#A9692C' },
+      { id: 'orange', cat: 'des', name: 'Oranges à la cannelle', desc: 'Fraîches, eau de fleur d\'oranger.', price: 20, tag: 'Végétarien', bg: '#E08A2E' },
+      { id: 'the', cat: 'bois', name: 'Thé à la menthe', desc: 'Théière pour deux, menthe fraîche.', price: 15, tag: '', bg: '#5C7A3A' },
+      { id: 'jus', cat: 'bois', name: 'Jus d\'orange pressé', desc: 'Pressé à la commande, 33 cl.', price: 20, tag: '', bg: '#E8A13A' }
+    ];
+    var CATS = [
+      { id: 'all', label: 'Tout' }, { id: 'ent', label: 'Entrées' }, { id: 'plat', label: 'Plats' },
+      { id: 'gril', label: 'Grillades' }, { id: 'des', label: 'Desserts' }, { id: 'bois', label: 'Boissons' }
+    ];
+    var pill = 'flex: 0 0 auto; padding: 0 18px; min-height: 44px; border-radius: 999px; font: 700 14px/1 \'Manrope\', sans-serif; cursor: pointer; ';
+    var cats = CATS.map(function (c) {
+      var on = st.cat === c.id;
+      return { label: c.label, style: pill + (on ? 'background: #8C2F1B; color: #FFFFFF; border: 1px solid #8C2F1B;' : 'background: #FFFFFF; color: #2A1F14; border: 1px solid #EBDDC6;'), pick: function () { self.setState({ cat: c.id }); } };
+    });
+    function setQty(id, q) { var c = Object.assign({}, st.cart); if (q <= 0) delete c[id]; else c[id] = q; self.setState({ cart: c }); }
+    var items = MENU.filter(function (m) { return st.cat === 'all' || m.cat === st.cat; }).map(function (m) {
+      var q = st.cart[m.id] || 0;
+      return { name: m.name, desc: m.desc, price: String(m.price), tag: m.tag, hasTag: !!m.tag, alt: 'Photo : ' + m.name,
+        img: 'height: 170px; position: relative; background: ' + m.bg + ';', qty: String(q), none: q === 0, some: q > 0,
+        add: function () { setQty(m.id, q + 1); }, dec: function () { setQty(m.id, q - 1); } };
+    });
+    var lines = [], sub = 0, count = 0;
+    MENU.forEach(function (m) { var q = st.cart[m.id]; if (q) { lines.push({ qty: String(q), name: m.name, total: String(q * m.price) }); sub += q * m.price; count += q; } });
+    var fee = st.mode === 'liv' && sub > 0 ? 15 : 0;
+    var tog = 'flex: 1; border: 0; border-radius: 11px; min-height: 44px; font: 700 15px/1 \'Manrope\', sans-serif; cursor: pointer; ';
+    var opt = 'text-align: left; padding: 0 16px; min-height: 48px; border-radius: 14px; font: 600 15px/1 \'Manrope\', sans-serif; cursor: pointer; ';
+    var empty = lines.length === 0;
+    return {
+      cats: cats, items: items, lines: lines, count: String(count), empty: empty,
+      sub: String(sub), fee: st.mode === 'liv' ? (fee + ' MAD') : 'Gratuit', total: String(sub + fee),
+      modeLiv: tog + (st.mode === 'liv' ? 'background: #FFFFFF; color: #2A1F14; box-shadow: 0 2px 8px rgba(42,31,20,.1);' : 'background: transparent; color: #5B4A38;'),
+      modeEmp: tog + (st.mode === 'emp' ? 'background: #FFFFFF; color: #2A1F14; box-shadow: 0 2px 8px rgba(42,31,20,.1);' : 'background: transparent; color: #5B4A38;'),
+      setLiv: function () { self.setState({ mode: 'liv' }); }, setEmp: function () { self.setState({ mode: 'emp' }); },
+      addrPh: st.mode === 'liv' ? 'Votre adresse de livraison' : 'Heure de retrait (ex. 20h30)',
+      eta: st.mode === 'liv' ? 'Livraison estimée : 35 – 45 min' : 'Prêt en 20 min au comptoir',
+      modeLabel: st.mode === 'liv' ? 'Livraison' : 'À emporter',
+      lastStep: st.mode === 'liv' ? 'En route vers vous' : 'Prête au comptoir',
+      payCash: opt + (st.pay === 'cash' ? 'background: #FBF4E9; border: 2px solid #2A1F14; color: #2A1F14;' : 'background: #FFFFFF; border: 1px solid #EBDDC6; color: #2A1F14;'),
+      payCard: opt + (st.pay === 'card' ? 'background: #FBF4E9; border: 2px solid #2A1F14; color: #2A1F14;' : 'background: #FFFFFF; border: 1px solid #EBDDC6; color: #2A1F14;'),
+      setCash: function () { self.setState({ pay: 'cash' }); }, setCard: function () { self.setState({ pay: 'card' }); },
+      payLabel: st.pay === 'cash' ? 'paiement à la livraison' : 'payé par carte',
+      placeStyle: 'border: 0; border-radius: 16px; min-height: 56px; font: 800 16px/1 \'Manrope\', sans-serif; ' + (empty ? 'background: #E9DFCF; color: #7A6A57; cursor: not-allowed;' : 'background: #8C2F1B; color: #FFFFFF; cursor: pointer;'),
+      place: function () { if (!empty) self.setState({ placed: true }); },
+      again: function () { self.setState({ placed: false, cart: {} }); },
+      placed: st.placed, notPlaced: !st.placed
+    };
+  }
+}
+</script>
+</body>
+</html>
